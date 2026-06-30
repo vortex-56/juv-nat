@@ -17,6 +17,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      # 🚀 Elimina lockfile para forzar instalación limpia en Linux
+      - run: rm -f package-lock.json
+      - run: rm -rf node_modules || true   # por si acaso
       - run: npm install
       - run: npm run build
       - uses: actions/configure-pages@v4
