@@ -5,8 +5,8 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
-    base: '/juv-nat/',
     plugins: [react(), tailwindcss()],
+    base: '/juv-nat/',
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
