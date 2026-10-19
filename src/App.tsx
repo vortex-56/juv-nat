@@ -1,9 +1,8 @@
 import Header from "./components/Header";
 import Hero from "./components/Hero";
-import IntroVideo from "./components/IntroVideo";
 import Services from "./components/Services";
+import IntroVideo from "./components/IntroVideo";
 import Fleet from "./components/Fleet";
-import Destinations from "./components/Destinations";
 import WhyChooseUs from "./components/WhyChooseUs";
 import Testimonials from "./components/Testimonials";
 import TrustLogos from "./components/TrustLogos";
@@ -13,41 +12,38 @@ import FloatingWsp from "./components/FloatingWsp";
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-brand-yellow selection:text-brand-dark overflow-x-hidden antialiased">
-      {/* 1. Elegant Sticky Header Navigation */}
+    <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-[#fab511] selection:text-[#6c1323] overflow-x-hidden antialiased">
+      {/* 1. HEADER / MENÚ PRINCIPAL */}
       <Header />
 
-      {/* 2. Hero Header Block (Title, Pillars, and 1:1 Stock Travel Video) */}
+      {/* 2. HERO PRINCIPAL + 3. FORMULARIO DENTRO DEL HERO */}
       <Hero />
 
-      {/* 3. Intro Video Section */}
-      <IntroVideo />
-
-      {/* 4. Strategic Services Section (Including Paseos familiares turísticos) */}
+      {/* 4. NUESTROS SERVICIOS (Formato 3x2) */}
       <Services />
 
-      {/* 5. Custom Fleet Options (Camioneta, Van, Sprinter Corta, Sprinter Larga) */}
+      {/* 5. VIDEO PROMOCIONAL (Conoce más de Transporte JUVASA) */}
+      <IntroVideo />
+
+      {/* 6. NUESTRA FLOTA (Camioneta, Van, Sprinter Corta, Sprinter Larga + Franja con íconos) */}
       <Fleet />
 
-      {/* 6. Cobertura (Tourist Destinations Recurrents: Ica, Chancay, Cieneguilla, Chosica, Churín, Lunahuaná) */}
-      <Destinations />
-
-      {/* 7. Underneath Brand Trust Reasons (¿Por qué elegir Juvasa?) */}
+      {/* 7. ¿POR QUÉ ELEGIR JUVASA? (Fondo guinda, 6 elementos visuales ícono + título) */}
       <WhyChooseUs />
 
-      {/* 8. Glowing Client Testimonial Endorsements */}
+      {/* 8. EXPERIENCIAS DE NUESTROS CLIENTES (3 testimonios reales) */}
       <Testimonials />
 
-      {/* 3. Client Authority/Social Trust Section */}
+      {/* 9. EMPRESAS QUE CONFÍAN EN NOSOTROS (Composición 3x3 de logos oficiales) */}
       <TrustLogos />
 
-      {/* 9.5 Final Call to Action Segment */}
+      {/* 10. CTA FINAL (¿Listo para reservar tu movilidad?) */}
       <FinalCTA />
 
-      {/* 10. Multi-column Brand Footer Bar (RUC, SOAT policies, MTC approvals, office details) */}
+      {/* 11. FOOTER (Fondo guinda oscuro, formalidad, redes, contactos) */}
       <Footer />
 
-      {/* 11. Pulse Green Wsp widget & Mobile sticky bottom footer CTA scroll navigator */}
+      {/* BOTÓN FLOTANTE DE WHATSAPP */}
       <FloatingWsp />
     </div>
   );

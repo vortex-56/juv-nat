@@ -1,78 +1,111 @@
-import { PhoneCall, Check } from "lucide-react";
+import { useState, useEffect } from "react";
+import { PhoneCall, Clock, UserCheck, ShieldCheck } from "lucide-react";
 
 export default function FinalCTA() {
-  const scrollToContact = () => {
-    const element = document.getElementById("contacto");
-    if (element) {
-      const headerOffset = 70;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth"
-      });
-    }
-  };
-
   const handleWhatsAppRedirect = () => {
     const targetPhone = "51981370909";
-    const rawText = "Hola, estoy listo para mi próximo viaje. Deseo realizar una cotización para un servicio de transporte privado.";
+    const rawText = "Hola, deseo consultar un servicio de transporte privado con Transporte JUVASA.";
     const waUrl = `https://wa.me/${targetPhone}?text=${encodeURIComponent(rawText)}`;
     window.open(waUrl, "_blank", "noopener,noreferrer");
   };
 
-  const bullets = [
-    { text: "Atención 24/7" },
-    { text: "Respuesta rápida" },
-    { text: "Sin compromiso" }
+  // Carrusel automático con las mismas imágenes de la portada
+  const slides = [
+    {
+      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/03-p1.webp",
+      alt: "Transporte JUVASA - Portada 1",
+    },
+    {
+      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/03-p2.webp",
+      alt: "Transporte JUVASA - Portada 2",
+    },
+    {
+      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/03-p3.webp",
+      alt: "Transporte JUVASA - Portada 3",
+    },
+    {
+      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/03-p4.webp",
+      alt: "Transporte JUVASA - Portada 4",
+    },
+  ];
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Transición automática sin controles manuales
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, [slides.length]);
+
+  const benefits = [
+    { icon: <Clock className="w-4 h-4 text-[#fab511]" />, text: "Atención 24/7" },
+    { icon: <UserCheck className="w-4 h-4 text-[#fab511]" />, text: "Atención personalizada" },
+    { icon: <ShieldCheck className="w-4 h-4 text-[#fab511]" />, text: "Sin compromiso" },
   ];
 
   return (
-    <section className="relative py-20 overflow-hidden bg-brand-dark">
-      {/* Background Image of a dark Van/highway at sunset */}
-      <div 
-        className="absolute inset-0 bg-cover bg-[center_85%] bg-no-repeat"
-        style={{ 
-          backgroundImage: "url('https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/bg04bus.webp')" 
-        }}
-      />
-      {/* Dark layer overlay */}
-      <div className="absolute inset-0 bg-black/75 backdrop-blur-[1px] z-1" />
+    <section className="relative py-20 lg:py-28 overflow-hidden bg-black text-white">
+      {/* Mitad derecha (solo escritorio): Carrusel automático de altura completa desde la mitad hasta el borde derecho */}
+      <div className="hidden lg:block absolute top-0 bottom-0 right-0 w-1/2 h-full overflow-hidden pointer-events-none select-none z-0">
+        {slides.map((slide, idx) => (
+          <div
+            key={idx}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+              idx === currentSlide ? "opacity-100 z-0" : "opacity-0 -z-10"
+            }`}
+          >
+            <img
+              src={slide.url}
+              alt={slide.alt}
+              className="w-full h-full object-cover object-center"
+              referrerPolicy="no-referrer"
+            />
+          </div>
+        ))}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full text-left">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+        {/* Degradado únicamente a la izquierda para desvanecer hacia el negro */}
+        <div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-black via-black/60 to-transparent z-10 pointer-events-none" />
+      </div>
+
+      {/* Contenido principal */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 w-full">
+        <div className="flex flex-col lg:flex-row items-center">
           
-          {/* Left alignment text block as requested */}
-          <div className="space-y-6 max-w-xl">
+          {/* Textos y acción:
+              - En móvil: centrado, sin imagen, ocupando el ancho completo en fondo negro puro.
+              - En escritorio: en la mitad izquierda, alineado a la izquierda. */}
+          <div className="w-full lg:w-1/2 text-center lg:text-left flex flex-col items-center lg:items-start space-y-6">
             <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight tracking-tight">
-              ¿Listo para tu{" "}
-              <span className="text-brand-yellow font-black">próximo viaje?</span>
+              ¿Listo para reservar{" "}
+              <span className="text-[#fab511]">tu movilidad?</span>
             </h2>
             
-            <p className="text-sm sm:text-base text-gray-200 font-sans font-medium leading-relaxed">
-              Cotiza ahora tu servicio de transporte privado y recibe atención inmediata por WhatsApp.
+            <p className="text-base sm:text-lg text-gray-300 font-sans leading-relaxed max-w-xl">
+              Consulta tu servicio de transporte privado y recibe atención inmediata por WhatsApp.
             </p>
 
-            {/* Compact button align with content */}
+            {/* Botón amarillo corporativo */}
             <div className="pt-2">
               <button
                 onClick={handleWhatsAppRedirect}
-                className="inline-flex items-center gap-2 px-6 py-3.5 bg-brand-yellow hover:bg-brand-yellow-hover text-brand-red-dark font-black text-xs sm:text-sm uppercase tracking-widest rounded-xl transition-all shadow-[0_4px_20px_rgba(250,191,18,0.35)] hover:shadow-[0_6px_24px_rgba(250,191,18,0.50)] active:scale-95 cursor-pointer"
+                className="inline-flex items-center gap-2.5 px-8 py-4 bg-[#fab511] hover:bg-[#e2a20b] text-[#6c1323] font-black text-xs sm:text-sm uppercase tracking-wider rounded-xl transition-all shadow-[0_6px_24px_rgba(250,181,17,0.3)] hover:shadow-[0_8px_30px_rgba(250,181,17,0.5)] active:scale-95 cursor-pointer"
               >
-                <PhoneCall className="w-5 h-5 fill-brand-red-dark text-brand-red-dark" />
-                Cotizar por WhatsApp
+                <PhoneCall className="w-5 h-5 fill-[#6c1323]" />
+                Cotiza por WhatsApp
               </button>
             </div>
 
-            {/* Bottom badges aligned horizontally with yellow icon and white text */}
-            <div className="flex flex-wrap gap-x-6 gap-y-3 pt-6 border-t border-white/10">
-              {bullets.map((bullet, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <div className="w-5 h-5 rounded-full bg-brand-yellow flex items-center justify-center shrink-0">
-                    <Check className="w-3.5 h-3.5 text-brand-red-dark stroke-[3.5]" />
+            {/* Beneficios inferiores */}
+            <div className="flex flex-wrap justify-center lg:justify-start gap-4 sm:gap-6 pt-6 border-t border-white/15 w-full">
+              {benefits.map((b, idx) => (
+                <div key={idx} className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-full bg-neutral-900 flex items-center justify-center shrink-0 border border-white/10">
+                    {b.icon}
                   </div>
-                  <span className="text-xs sm:text-sm font-bold text-white tracking-wide font-sans">
-                    {bullet.text}
+                  <span className="text-xs sm:text-sm font-bold text-gray-200 tracking-wide font-sans">
+                    {b.text}
                   </span>
                 </div>
               ))}

@@ -1,6 +1,6 @@
 {
-  "name": "Transporte Juvasa",
-  "description": "Landing page de alta conversión para servicios de transporte privado ejecutivo y turístico con redes de contacto directas a WhatsApp.",
+  "name": "Transporte Privado y Turístico en Lima | JUVASA",
+  "description": "Servicio de transporte privado y turístico en Lima para empresas, familias y grupos. Vans y Sprinter con conductor, traslados al aeropuerto y servicios programados. Cotiza con JUVASA.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

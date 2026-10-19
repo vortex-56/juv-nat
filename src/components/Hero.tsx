@@ -1,35 +1,59 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Clock, Shield, UserCheck, CalendarDays, PhoneCall, Compass, User, Phone, Users, Calendar, Mail } from "lucide-react";
+import { Clock, ShieldCheck, UserCheck, Headphones, PhoneCall, User, Phone, Users, Calendar, ChevronDown, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function Hero() {
-  // Slider Background State
-  const [currentBg, setCurrentBg] = useState(0);
-  const bgImages = [
-    "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/bg01auto.webp",
-    "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/bg02minibus.webp",
-    "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/bg03van.webp",
-    "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/bg04bus.webp"
-  ];
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentBg((prev) => (prev + 1) % bgImages.length);
-    }, 3000);
-    return () => clearInterval(timer);
-  }, [bgImages.length]);
-
-  // Floating Form State (Including email as requested)
   const [formData, setFormData] = useState({
     fullName: "",
     contact: "",
-    passengers: "",
-    email: "",
     serviceType: "",
-    serviceDate: ""
+    serviceDate: "",
+    passengers: ""
   });
   const [countryCode, setCountryCode] = useState("+51");
   const [showCodeDropdown, setShowCodeDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  // Carrusel de imágenes de la portada
+  const heroSlides = [
+    {
+      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/03-p1.webp",
+      alt: "Transporte JUVASA - Portada 1",
+      label: "Unidad 1",
+    },
+    {
+      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/03-p2.webp",
+      alt: "Transporte JUVASA - Portada 2",
+      label: "Unidad 2",
+    },
+    {
+      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/03-p3.webp",
+      alt: "Transporte JUVASA - Portada 3",
+      label: "Unidad 3",
+    },
+    {
+      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/03-p4.webp",
+      alt: "Transporte JUVASA - Portada 4",
+      label: "Unidad 4",
+    },
+  ];
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [heroSlides.length]);
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev === 0 ? heroSlides.length - 1 : prev - 1));
+  };
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+  };
 
   const countries = [
     { code: "+51", emoji: "🇵🇪", name: "Perú" },
@@ -44,7 +68,6 @@ export default function Hero() {
     { code: "+58", emoji: "🇻🇪", name: "Venezuela" },
     { code: "+55", emoji: "🇧🇷", name: "Brasil" },
     { code: "+507", emoji: "🇵🇦", name: "Panamá" },
-    { code: "+506", emoji: "🇨🇷", name: "Costa Rica" },
   ];
 
   useEffect(() => {
@@ -64,195 +87,151 @@ export default function Hero() {
     const found = countries.find(c => c.code === normalized);
     return found ? found.emoji : "🌐";
   };
-  const [isSuccess, setIsSuccess] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleWhatsAppDirect = () => {
+    const targetPhone = "51981370909";
+    const rawText = "Hola, deseo cotizar un servicio de transporte privado con Transporte JUVASA.";
+    const waUrl = `https://wa.me/${targetPhone}?text=${encodeURIComponent(rawText)}`;
+    window.open(waUrl, "_blank", "noopener,noreferrer");
+  };
+
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Trigger conversion event for Google & Meta Ads tracking
-    console.log("⚡ [CONVERSION EVENT] Evento de Cotización disparado para Google Ads & Meta Pixel.");
-    if (window.hasOwnProperty("gtag")) {
-      try {
-        (window as any).gtag("event", "conversion", {
-          send_to: "AW-CONVERSION_ID/LABEL",
-          value: 1.0,
-          currency: "PEN"
-        });
-      } catch (err) {
-        console.error("Gtag conversion error:", err);
-      }
-    }
-
     const targetPhone = "51981370909";
     const fullContact = `${countryCode} ${formData.contact}`;
-    const nameLine = `👤 *Nombre:* ${formData.fullName}%0A`;
-    const contactLine = `📞 *WhatsApp:* ${fullContact}%0A`;
-    const paxLine = `👥 *N° pasajeros:* ${formData.passengers}%0A`;
-    const emailLine = formData.email ? `✉️ *Correo:* ${formData.email}%0A` : "";
-    const serviceLine = `🚐 *Servicio:* ${formData.serviceType || "No especificado"}%0A`;
-    const dateLine = `📅 *Fecha del servicio:* ${formData.serviceDate || "Por coordinarse"}%0A`;
+    
+    let message = `Hola Transporte JUVASA, deseo realizar una consulta de servicio:%0A%0A`;
+    message += `👤 *Nombre:* ${formData.fullName}%0A`;
+    message += `📱 *Teléfono/WhatsApp:* ${fullContact}%0A`;
+    if (formData.serviceType) message += `🚐 *Tipo de servicio:* ${formData.serviceType}%0A`;
+    if (formData.serviceDate) message += `📅 *Fecha del servicio:* ${formData.serviceDate}%0A`;
+    if (formData.passengers) message += `👥 *Número de pasajeros:* ${formData.passengers}%0A`;
 
-    const rawText = `Hola, soy ${formData.fullName}. Mi WhatsApp es ${fullContact}.${formData.email ? ` Mi correo es ${formData.email}.` : ""} Necesito un servicio de transporte para ${formData.passengers}${formData.serviceDate ? ` para la fecha ${formData.serviceDate}` : ""}.${formData.serviceType ? ` Mi tipo de servicio de interés es: ${formData.serviceType}.` : ""}`;
-
-    const waUrl = `https://wa.me/${targetPhone}?text=${encodeURIComponent(formData.fullName ? rawText : "Hola, deseo realizar una cotización rápida para un servicio de transporte privado.")}`;
+    const waUrl = `https://wa.me/${targetPhone}?text=${message}`;
 
     setIsSuccess(true);
     setTimeout(() => {
       window.open(waUrl, "_blank", "noopener,noreferrer");
       setIsSuccess(false);
-    }, 1500);
+    }, 1200);
   };
 
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      const headerOffset = 70;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth"
-      });
-    }
-  };
-
-  const pillars = [
-    {
-      icon: <Clock className="w-4 h-4 lg:w-3.5 lg:h-3.5 xl:w-4 xl:h-4 text-brand-yellow shrink-0" />,
-      title: "Puntualidad",
-      desc: "Garantizada todo el año"
-    },
-    {
-      icon: <Shield className="w-4 h-4 lg:w-3.5 lg:h-3.5 xl:w-4 xl:h-4 text-brand-yellow shrink-0" />,
-      title: "Seguridad",
-      desc: "Y absoluta confianza"
-    },
-    {
-      icon: <UserCheck className="w-4 h-4 lg:w-3.5 lg:h-3.5 xl:w-4 xl:h-4 text-brand-yellow shrink-0" />,
-      title: "Conductores",
-      desc: "Profesionales capacitados"
-    },
-    {
-      icon: <CalendarDays className="w-4 h-4 lg:w-3.5 lg:h-3.5 xl:w-4 xl:h-4 text-brand-yellow shrink-0" />,
-      title: "Atención 24/7",
-      desc: "Monitoreo constante rápido"
-    }
+  const benefits = [
+    { icon: <Clock className="w-4 h-4 text-[#fab511]" />, label: "Puntualidad" },
+    { icon: <ShieldCheck className="w-4 h-4 text-[#fab511]" />, label: "Seguridad" },
+    { icon: <UserCheck className="w-4 h-4 text-[#fab511]" />, label: "Conductores profesionales" },
+    { icon: <Headphones className="w-4 h-4 text-[#fab511]" />, label: "Atención 24/7" },
   ];
 
   return (
     <section
       id="inicio"
-      className="relative pt-[70px] pb-8 lg:pt-[80px] lg:pb-10 min-h-screen lg:h-[max(580px,calc(100vh-64px))] lg:max-h-[720px] xl:max-h-[820px] flex items-center overflow-hidden bg-brand-dark"
+      className="relative pt-[78px] pb-12 lg:pt-[96px] lg:pb-16 min-h-[92vh] flex items-center bg-black text-white overflow-hidden"
     >
-      {/* Anchor for contact scrolls */}
-      <div id="contacto" className="absolute top-0 left-0 w-full h-0 pointer-events-none" />
-
-      {/* Slider of 4 Vehicles */}
+      {/* Carrusel de imágenes de la portada */}
       <div className="absolute inset-0 z-0 overflow-hidden">
-        {bgImages.map((imgUrl, i) => (
+        {heroSlides.map((slide, idx) => (
           <div
-            key={i}
-            className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-in-out ${
-              i === currentBg ? "opacity-80" : "opacity-0"
+            key={slide.url}
+            className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+              idx === currentSlide ? "opacity-100 z-[1]" : "opacity-0 pointer-events-none z-0"
             }`}
-            style={{ backgroundImage: `url('${imgUrl}')` }}
-          />
+          >
+            <img
+              src={slide.url}
+              alt={slide.alt}
+              className="w-full h-full object-cover object-[center_30%]"
+            />
+          </div>
         ))}
-        {/* Layer of rich gradient to read text perfectly and show background cover photos */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-neutral-950/95 via-neutral-950/50 to-black/35 z-1" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808007_1px,transparent_1px),linear-gradient(to_bottom,#80808007_1px,transparent_1px)] bg-[size:14px_24px] z-2"></div>
+        {/* Capa negra transparente para apreciar claramente las unidades manteniendo alta legibilidad */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-black/35 lg:bg-gradient-to-r lg:from-black/75 lg:via-black/45 lg:to-black/25 z-[2]" />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-4 xl:gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 items-center">
           
-          {/* Left Column: Brand Typography & Pillars */}
-          <div className="flex flex-col text-left space-y-3 lg:space-y-2 xl:space-y-4">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-brand-red/45 border border-brand-red/60 text-white text-[9px] md:text-xs font-bold font-sans uppercase tracking-[0.1em] rounded-full w-fit">
-              <span className="w-2 h-2 rounded-full bg-brand-yellow animate-ping"></span>
-              Servicio Turístico y Ejecutivo 100% Formal
+          {/* Lado Izquierdo: Información del Hero */}
+          <div className="lg:col-span-7 text-left space-y-4 md:space-y-6">
+            
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-black/40 border border-white/20 rounded-full text-[11px] font-bold text-[#fab511] tracking-wide backdrop-blur-sm">
+              <span className="w-2 h-2 rounded-full bg-[#fab511] animate-pulse" />
+              TRANSPORTE PRIVADO FORMAL Y TURÍSTICO
             </div>
 
-            <h1 className="font-display text-2xl sm:text-3xl lg:text-[23px] lg:leading-[1.15] xl:text-[38px] xl:leading-[1.1] font-black text-white tracking-tight">
-              Transporte Ejecutivo <span className="block my-0.5">y Turístico para</span>
-              <span className="text-brand-yellow block mt-0.5 font-black">
-                Empresas, Familias y Grupos
-              </span>
+            {/* H1 Principal Único */}
+            <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-[1.12] tracking-tight drop-shadow-md">
+              Transporte privado y turístico para{" "}
+              <span className="text-[#fab511]">empresas, familias y grupos</span>
             </h1>
 
-            <p className="text-red-100 text-[11px] sm:text-xs xl:text-sm leading-relaxed max-w-lg">
-              Soluciones de transporte privado con puntualidad, seguridad y comodidad en Lima y todo el Perú.
+            {/* Subtítulo */}
+            <p className="text-gray-100 text-sm sm:text-base lg:text-lg leading-relaxed max-w-xl font-sans drop-shadow-sm font-normal">
+              Servicio de transporte privado con movilidades modernas, conductores profesionales y atención personalizada en cada traslado.
             </p>
 
-            {/* Confidence Pillars */}
-            <div className="grid grid-cols-2 gap-2 max-w-md pt-1">
-              {pillars.map((pillar, i) => (
-                <div key={i} className="flex gap-2 items-start p-1.5 lg:p-1 xl:p-2 border border-white/5 bg-white/5 rounded-lg">
-                  <div className="p-1 rounded bg-brand-red/35 flex items-center justify-center border border-brand-red/50 shrink-0 mt-0.5">
-                    {pillar.icon}
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[10px] lg:text-[9.5px] xl:text-[11px] font-bold text-white font-display uppercase tracking-wider leading-tight">{pillar.title}</span>
-                    <span className="text-[8.5px] lg:text-[8px] xl:text-[9px] text-red-200 font-sans leading-none mt-0.5">{pillar.desc}</span>
-                  </div>
+            {/* Beneficios con íconos */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2 max-w-2xl">
+              {benefits.map((b, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center gap-2 px-3 py-2 bg-black/40 border border-white/15 rounded-xl backdrop-blur-md shadow-sm"
+                >
+                  <div className="shrink-0">{b.icon}</div>
+                  <span className="text-xs font-bold text-white leading-tight">
+                    {b.label}
+                  </span>
                 </div>
               ))}
             </div>
 
-            {/* Action buttons */}
-            <div className="flex flex-col sm:flex-row gap-2 pt-1 lg:pt-0">
+            {/* Único botón principal en el Hero: Cotiza por WhatsApp */}
+            <div className="pt-2">
               <button
-                onClick={() => scrollToSection("contacto")}
-                className="px-4 py-2 bg-brand-yellow hover:bg-brand-yellow-hover text-brand-red-dark font-black text-[10px] xl:text-xs uppercase tracking-wider rounded-lg shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer w-full sm:w-auto"
+                onClick={handleWhatsAppDirect}
+                className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 bg-[#fab511] hover:bg-[#e2a20b] text-[#6c1323] font-black text-xs sm:text-sm uppercase tracking-wider rounded-xl shadow-[0_6px_20px_rgba(250,181,17,0.4)] hover:shadow-[0_8px_25px_rgba(250,181,17,0.6)] active:scale-95 transition-all cursor-pointer w-full sm:w-auto"
               >
-                <PhoneCall className="w-3.5 h-3.5" />
-                Cotizar por WhatsApp
-              </button>
-              
-              <button
-                onClick={() => scrollToSection("servicios")}
-                className="px-4 py-2 bg-transparent hover:bg-white/5 text-white font-bold text-[10px] xl:text-xs uppercase tracking-wider rounded-lg border border-white/30 active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer w-full sm:w-auto"
-              >
-                <Compass className="w-3.5 h-3.5" />
-                Conocer Servicios
+                <PhoneCall className="w-4 h-4 fill-[#6c1323]" />
+                Cotiza por WhatsApp
               </button>
             </div>
           </div>
 
-          {/* Right Column: Floating Form */}
-          <div className="w-full max-w-sm lg:max-w-[340px] xl:max-w-[380px] lg:ml-auto">
-            <div className="bg-white text-brand-dark rounded-2xl p-4 sm:p-5 lg:p-4 xl:p-6 shadow-2xl border border-gray-100 relative overflow-hidden">
+          {/* Lado Derecho: Formulario Hero "CONSULTA TU SERVICIO" */}
+          <div className="lg:col-span-5 w-full max-w-md mx-auto lg:ml-auto">
+            <div className="bg-white text-gray-900 rounded-2xl p-5 sm:p-7 shadow-2xl border border-gray-100 relative overflow-hidden">
               
               {isSuccess && (
-                <div className="absolute inset-0 bg-white/95 backdrop-blur-sm z-30 flex flex-col items-center justify-center p-4 text-center">
-                  <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center border border-emerald-500 mb-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse"></span>
+                <div className="absolute inset-0 bg-white/95 backdrop-blur-sm z-30 flex flex-col items-center justify-center p-6 text-center">
+                  <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center border border-emerald-500 mb-3">
+                    <CheckCircle2 className="w-6 h-6 text-emerald-600" />
                   </div>
-                  <h3 className="font-display text-sm font-bold text-gray-900">¡Cotización Lista!</h3>
-                  <p className="text-[10px] text-gray-500 mt-1 max-w-xs leading-tight">
-                    Abriendo WhatsApp para comunicarte directamente con nuestro asesor disponible.
+                  <h3 className="font-display text-base font-bold text-gray-900">¡Consulta Generada!</h3>
+                  <p className="text-xs text-gray-600 mt-1 max-w-xs leading-relaxed">
+                    Conectando con WhatsApp para enviarle la información directa a nuestro equipo.
                   </p>
                 </div>
               )}
 
-              <div className="text-left mb-3.5">
-                <h3 className="font-display text-xs font-bold text-red-950 uppercase tracking-widest block text-brand-red">
-                  COTIZA TU SERVICIO RÁPIDAMENTE
+              <div className="text-left mb-4">
+                <h3 className="font-display text-base sm:text-lg font-black text-[#6c1323] tracking-wide uppercase">
+                  CONSULTA TU SERVICIO
                 </h3>
-                <p className="text-[10px] font-sans text-gray-500 font-medium">
-                  Te respondemos en minutos
+                <p className="text-xs font-sans text-gray-500 mt-0.5">
+                  Completa los datos y te atendemos de inmediato
                 </p>
               </div>
 
-              <form onSubmit={handleFormSubmit} className="space-y-2.5 text-left">
-                {/* Nombre de Contacto */}
-                <div className="space-y-1">
-                  <label className="text-[9px] font-black text-gray-700 uppercase tracking-wider block">
+              <form onSubmit={handleFormSubmit} className="space-y-3 text-left">
+                {/* Nombre completo */}
+                <div>
+                  <label className="text-[10px] font-black text-gray-700 uppercase tracking-wider block mb-1">
                     Nombre completo *
                   </label>
                   <div className="relative">
@@ -260,59 +239,48 @@ export default function Hero() {
                       type="text"
                       name="fullName"
                       required
-                      placeholder="Ej. Juan Pérez"
+                      placeholder="Ej. Carlos Mendoza"
                       value={formData.fullName}
                       onChange={handleChange}
-                      className="w-full pr-8 pl-3 py-1.5 text-xs text-gray-900 border border-gray-200 rounded-lg outline-none focus:border-brand-red bg-gray-50 focus:bg-white transition-all placeholder:text-gray-400 font-sans font-medium"
+                      className="w-full pr-8 pl-3 py-2 text-xs text-gray-900 border border-gray-200 rounded-lg outline-none focus:border-[#6c1323] bg-gray-50 focus:bg-white transition-all font-sans font-medium"
                     />
-                    <User className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+                    <User className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                   </div>
                 </div>
 
-                {/* WhatsApp */}
-                <div className="space-y-1">
-                  <label className="text-[9px] font-black text-gray-700 uppercase tracking-wider block">
-                    WhatsApp *
+                {/* Teléfono o WhatsApp con selector de prefijo internacional */}
+                <div>
+                  <label className="text-[10px] font-black text-gray-700 uppercase tracking-wider block mb-1">
+                    Teléfono o WhatsApp *
                   </label>
                   <div className="flex gap-1.5 font-sans">
-                    {/* Country Code Selector */}
-                    <div className="relative w-[34%] shrink-0" ref={dropdownRef}>
-                      <div className="flex items-center gap-1 w-full px-2 py-1.5 text-xs text-gray-950 border border-gray-200 rounded-lg outline-none focus-within:ring-1 focus-within:ring-brand-red focus-within:border-brand-red bg-gray-50 focus-within:bg-white transition-all select-none">
-                        {/* Emoji based on current code prefix */}
-                        <span className="text-[13px]">{getCountryEmoji(countryCode)}</span>
-                        
-                        {/* Editable Country Code Input */}
+                    <div className="relative w-[36%] shrink-0" ref={dropdownRef}>
+                      <div className="flex items-center gap-1 w-full px-2 py-2 text-xs text-gray-950 border border-gray-200 rounded-lg bg-gray-50 focus-within:bg-white focus-within:border-[#6c1323] transition-all">
+                        <span className="text-sm">{getCountryEmoji(countryCode)}</span>
                         <input
                           type="text"
                           value={countryCode}
                           onChange={(e) => {
-                            let val = e.target.value;
-                            // Ensure only valid characters (+ and digits) can be typed
+                            const val = e.target.value;
                             if (val === "" || val === "+" || /^\+?[0-9]*$/.test(val)) {
                               setCountryCode(val);
                             }
                           }}
                           placeholder="+51"
-                          className="w-full bg-transparent border-none outline-none p-0 text-xs font-bold text-gray-950 block"
+                          className="w-full bg-transparent border-none outline-none p-0 text-xs font-bold text-gray-900"
                         />
-                        
-                        {/* Trigger button for menu */}
                         <button
                           type="button"
                           onClick={() => setShowCodeDropdown(!showCodeDropdown)}
-                          className="text-gray-400 hover:text-gray-600 focus:outline-none text-[8px] px-0.5"
-                          aria-label="Seleccionar País"
+                          className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                          aria-label="Prefijo país"
                         >
-                          ▼
+                          <ChevronDown className="w-3 h-3" />
                         </button>
                       </div>
 
-                      {/* Dropdown overlay list */}
                       {showCodeDropdown && (
-                        <div className="absolute left-0 mt-1 max-h-48 w-44 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-xl z-50 py-1 text-xs divide-y divide-gray-50">
-                          <div className="px-2 py-1 text-[8px] font-bold text-gray-400 uppercase tracking-wider bg-gray-50/55">
-                            Seleccionar País
-                          </div>
+                        <div className="absolute left-0 mt-1 max-h-48 w-48 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-xl z-50 py-1 text-xs">
                           {countries.map((c) => (
                             <button
                               key={c.code}
@@ -321,36 +289,78 @@ export default function Hero() {
                                 setCountryCode(c.code);
                                 setShowCodeDropdown(false);
                               }}
-                              className="flex items-center gap-2 w-full px-3 py-1.5 text-left hover:bg-gray-100 transition-colors text-gray-850"
+                              className="flex items-center gap-2 w-full px-3 py-1.5 text-left hover:bg-gray-100 text-gray-800"
                             >
-                              <span className="text-sm">{c.emoji}</span>
+                              <span>{c.emoji}</span>
                               <span className="font-bold">{c.code}</span>
-                              <span className="text-gray-400 text-[10px] truncate">({c.name})</span>
+                              <span className="text-gray-500 text-[10px] truncate">({c.name})</span>
                             </button>
                           ))}
                         </div>
                       )}
                     </div>
 
-                    {/* Phone Number Input */}
                     <div className="relative flex-1">
                       <input
-                        type="text"
+                        type="tel"
                         name="contact"
                         required
-                        placeholder="Ej. 981370909"
+                        placeholder="Ej. 981 370 909"
                         value={formData.contact}
                         onChange={handleChange}
-                        className="w-full pr-8 pl-3 py-1.5 text-xs text-gray-900 border border-gray-200 rounded-lg outline-none focus:border-brand-red bg-gray-50 focus:bg-white transition-all placeholder:text-gray-400 font-sans font-medium"
+                        className="w-full pr-8 pl-3 py-2 text-xs text-gray-900 border border-gray-200 rounded-lg outline-none focus:border-[#6c1323] bg-gray-50 focus:bg-white transition-all font-sans font-medium"
                       />
-                      <Phone className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+                      <Phone className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                     </div>
                   </div>
                 </div>
 
-                {/* Número de Pasajeros - Moved under WhatsApp */}
-                <div className="space-y-1">
-                  <label className="text-[9px] font-black text-gray-700 uppercase tracking-wider block">
+                {/* Tipo de servicio (opcional) */}
+                <div>
+                  <label className="text-[10px] font-black text-gray-700 uppercase tracking-wider block mb-1">
+                    Tipo de servicio (Opcional)
+                  </label>
+                  <div className="relative">
+                    <select
+                      id="tipo-servicio"
+                      name="serviceType"
+                      value={formData.serviceType}
+                      onChange={handleChange}
+                      className="w-full pr-8 pl-3 py-2 text-xs text-gray-900 border border-gray-200 rounded-lg outline-none focus:border-[#6c1323] bg-gray-50 focus:bg-white transition-all font-sans cursor-pointer appearance-none font-medium"
+                    >
+                      <option value="">Selecciona una opción</option>
+                      <option value="Transporte corporativo y ejecutivo">Transporte corporativo y ejecutivo</option>
+                      <option value="Traslados desde y hacia el aeropuerto">Traslados desde y hacia el aeropuerto</option>
+                      <option value="Paseos familiares">Paseos familiares</option>
+                      <option value="Eventos sociales">Eventos sociales</option>
+                      <option value="Viajes privados a destinos seleccionados">Viajes privados a destinos seleccionados</option>
+                      <option value="Transporte para grupos y delegaciones">Transporte para grupos y delegaciones</option>
+                      <option value="Otros servicios">Otros servicios</option>
+                    </select>
+                    <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                  </div>
+                </div>
+
+                {/* Fecha del servicio (opcional) */}
+                <div>
+                  <label className="text-[10px] font-black text-gray-700 uppercase tracking-wider block mb-1">
+                    Fecha del servicio (Opcional)
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="date"
+                      name="serviceDate"
+                      value={formData.serviceDate}
+                      onChange={handleChange}
+                      className="w-full pr-8 pl-3 py-2 text-xs text-gray-900 border border-gray-200 rounded-lg outline-none focus:border-[#6c1323] bg-gray-50 focus:bg-white transition-all font-sans font-medium"
+                    />
+                    <Calendar className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                  </div>
+                </div>
+
+                {/* Número de pasajeros */}
+                <div>
+                  <label className="text-[10px] font-black text-gray-700 uppercase tracking-wider block mb-1">
                     Número de pasajeros *
                   </label>
                   <div className="relative">
@@ -360,85 +370,25 @@ export default function Hero() {
                       name="passengers"
                       min="1"
                       required
-                      placeholder="Ej. 4"
+                      placeholder="Ej. 8"
                       value={formData.passengers}
                       onChange={handleChange}
-                      className="w-full pr-8 pl-3 py-1.5 text-xs text-gray-900 border border-gray-200 rounded-lg outline-none focus:border-brand-red bg-gray-50 focus:bg-white transition-all placeholder:text-gray-400 font-sans font-medium"
+                      className="w-full pr-8 pl-3 py-2 text-xs text-gray-900 border border-gray-200 rounded-lg outline-none focus:border-[#6c1323] bg-gray-50 focus:bg-white transition-all font-sans font-medium"
                     />
-                    <Users className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+                    <Users className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                   </div>
                 </div>
 
-                {/* Correo Electrónico (Opcional) */}
-                <div className="space-y-1">
-                  <label className="text-[9px] font-black text-gray-700 uppercase tracking-wider block">
-                    Correo electrónico (Opcional)
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="email"
-                      name="email"
-                      placeholder="Ej. juan@correo.com"
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="w-full pr-8 pl-3 py-1.5 text-xs text-gray-900 border border-gray-200 rounded-lg outline-none focus:border-brand-red bg-gray-50 focus:bg-white transition-all placeholder:text-gray-400 font-sans font-medium"
-                    />
-                    <Mail className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
-                  </div>
-                </div>
-
-                {/* Tipo de Servicio */}
-                <div className="space-y-1">
-                  <label className="text-[9px] font-black text-gray-700 uppercase tracking-wider block">
-                    Tipo de servicio (Opcional)
-                  </label>
-                  <div className="relative">
-                    <select
-                      id="tipo-servicio"
-                      name="serviceType"
-                      value={formData.serviceType}
-                      onChange={handleChange}
-                      className="w-full pr-8 pl-2.5 py-1.5 text-xs text-gray-900 border border-gray-200 rounded-lg outline-none focus:border-brand-red bg-gray-50 focus:bg-white transition-all font-sans cursor-pointer appearance-none font-medium"
-                    >
-                      <option value="">Seleccionar</option>
-                      <option value="Transporte para Empresas">Transporte para Empresas</option>
-                      <option value="Transporte de Personal">Transporte de Personal</option>
-                      <option value="Traslados al Aeropuerto">Traslados al Aeropuerto</option>
-                      <option value="Paseos Familiares">Paseos Familiares</option>
-                      <option value="Eventos Sociales">Eventos Sociales</option>
-                      <option value="Eventos Corporativos">Eventos Corporativos</option>
-                    </select>
-                    <Compass className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
-                  </div>
-                </div>
-
-                {/* Fecha del Servicio */}
-                <div className="space-y-1">
-                  <label className="text-[9px] font-black text-gray-700 uppercase tracking-wider block">
-                    Fecha del servicio (Opcional)
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="date"
-                      name="serviceDate"
-                      value={formData.serviceDate}
-                      onChange={handleChange}
-                      className="w-full pr-8 pl-3 py-1.5 text-xs text-gray-950 border border-gray-200 rounded-lg outline-none focus:border-brand-red bg-gray-50 focus:bg-white transition-all font-sans font-medium"
-                    />
-                    <Calendar className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
-                  </div>
-                </div>
-
-                {/* Submit button */}
-                <div className="pt-1.5">
+                {/* Botón ENVIAR CONSULTA */}
+                <div className="pt-2">
                   <button
                     type="submit"
-                    className="w-full py-2 bg-brand-red hover:bg-brand-red-hover text-white font-black text-xs uppercase tracking-wider rounded-lg transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="w-full py-3 bg-[#6c1323] hover:bg-[#85182c] text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-md active:scale-95 cursor-pointer flex items-center justify-center gap-2"
                   >
-                    Solicitar Cotización
+                    ENVIAR CONSULTA
                   </button>
-                  <p className="text-[9px] text-gray-400 font-sans text-center mt-1.5 font-semibold">
-                    Respuesta inmediata por WhatsApp
+                  <p className="text-[10px] text-gray-500 font-sans text-center mt-2">
+                    Respuesta rápida y directa a tu WhatsApp
                   </p>
                 </div>
               </form>
@@ -446,6 +396,57 @@ export default function Hero() {
           </div>
 
         </div>
+
+        {/* Controles e indicadores del carrusel de la portada */}
+        <div className="mt-8 pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            {/* Botones flechas previo y siguiente */}
+            <div className="flex items-center gap-1 bg-black/40 backdrop-blur-md p-1 rounded-full border border-white/10">
+              <button
+                type="button"
+                onClick={prevSlide}
+                aria-label="Movilidad anterior"
+                className="w-7 h-7 flex items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/20 transition-all cursor-pointer"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={nextSlide}
+                aria-label="Siguiente movilidad"
+                className="w-7 h-7 flex items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/20 transition-all cursor-pointer"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Puntos de paginación e indicador de unidad activa */}
+            <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
+              {heroSlides.map((slide, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setCurrentSlide(idx)}
+                  aria-label={`Ver ${slide.label}`}
+                  className={`transition-all rounded-full cursor-pointer ${
+                    idx === currentSlide
+                      ? "bg-[#fab511] w-6 h-2 shadow-[0_0_10px_rgba(250,181,17,0.8)]"
+                      : "bg-white/40 hover:bg-white/80 w-2 h-2"
+                  }`}
+                />
+              ))}
+              <span className="text-[11px] font-bold text-white/90 pl-1.5 hidden sm:inline-block">
+                {heroSlides[currentSlide].label}
+              </span>
+            </div>
+          </div>
+
+          <div className="hidden sm:flex items-center gap-2 text-[11px] font-semibold text-[#fab511] bg-black/30 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-[#fab511]/20">
+            <span className="w-2 h-2 rounded-full bg-[#fab511] animate-pulse" />
+            <span>Flota moderna JUVASA</span>
+          </div>
+        </div>
+
       </div>
     </section>
   );
