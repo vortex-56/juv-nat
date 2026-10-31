@@ -70,13 +70,15 @@ export default function Header() {
 
           {/* Botón destacado: Cotiza por WhatsApp con amarillo corporativo */}
           <div className="hidden lg:block">
-            <button
-              onClick={handleWhatsAppClick}
+            <a
+              href="https://wa.me/51981370909?text=Hola%2C%20deseo%20cotizar%20un%20servicio%20de%20transporte%20privado%20con%20Transporte%20JUVASA."
+              target="_blank"
+              rel="noopener noreferrer"
               className="px-5 py-2.5 bg-[#fab511] hover:bg-[#e2a20b] text-[#6c1323] font-black text-xs uppercase tracking-wider rounded-xl shadow-[0_4px_16px_rgba(250,181,17,0.35)] hover:shadow-[0_6px_22px_rgba(250,181,17,0.5)] active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
             >
               <PhoneCall className="w-4 h-4 fill-[#6c1323]" />
               Cotiza por WhatsApp
-            </button>
+            </a>
           </div>
 
           {/* Mobile Hamburguer button */}
@@ -109,13 +111,15 @@ export default function Header() {
             </button>
           ))}
           <div className="pt-3 border-t border-white/10">
-            <button
-              onClick={handleWhatsAppClick}
+            <a
+              href="https://wa.me/51981370909?text=Hola%2C%20deseo%20cotizar%20un%20servicio%20de%20transporte%20privado%20con%20Transporte%20JUVASA."
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-full py-3 bg-[#fab511] text-[#6c1323] font-black text-xs uppercase tracking-wider rounded-xl shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all"
             >
               <PhoneCall className="w-4 h-4 fill-[#6c1323]" />
               Cotiza por WhatsApp
-            </button>
+            </a>
           </div>
         </div>
       </div>

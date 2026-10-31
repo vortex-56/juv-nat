@@ -12,19 +12,19 @@ export default function FinalCTA() {
   // Carrusel automático con las mismas imágenes de la portada
   const slides = [
     {
-      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/03-p1.webp",
+      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/x1-p1.1.webp",
       alt: "Transporte JUVASA - Portada 1",
     },
     {
-      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/03-p2.webp",
+      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/x1-p2.webp",
       alt: "Transporte JUVASA - Portada 2",
     },
     {
-      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/03-p3.webp",
+      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/x1-p3.webp",
       alt: "Transporte JUVASA - Portada 3",
     },
     {
-      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/03-p4.webp",
+      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/x1-p4.webp",
       alt: "Transporte JUVASA - Portada 4",
     },
   ];
@@ -46,7 +46,7 @@ export default function FinalCTA() {
   ];
 
   return (
-    <section className="relative py-20 lg:py-28 overflow-hidden bg-black text-white">
+    <section className="relative py-10 lg:py-14 overflow-hidden bg-black text-white">
       {/* Mitad derecha (solo escritorio): Carrusel automático de altura completa desde la mitad hasta el borde derecho */}
       <div className="hidden lg:block absolute top-0 bottom-0 right-0 w-1/2 h-full overflow-hidden pointer-events-none select-none z-0">
         {slides.map((slide, idx) => (
@@ -65,8 +65,8 @@ export default function FinalCTA() {
           </div>
         ))}
 
-        {/* Degradado únicamente a la izquierda para desvanecer hacia el negro */}
-        <div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-black via-black/60 to-transparent z-10 pointer-events-none" />
+        {/* Degradado angosto únicamente en el borde izquierdo para no tapar ni oscurecer las imágenes */}
+        <div className="absolute inset-y-0 left-0 w-16 sm:w-24 bg-gradient-to-r from-black to-transparent z-10 pointer-events-none" />
       </div>
 
       {/* Contenido principal */}
@@ -76,7 +76,7 @@ export default function FinalCTA() {
           {/* Textos y acción:
               - En móvil: centrado, sin imagen, ocupando el ancho completo en fondo negro puro.
               - En escritorio: en la mitad izquierda, alineado a la izquierda. */}
-          <div className="w-full lg:w-1/2 text-center lg:text-left flex flex-col items-center lg:items-start space-y-6">
+          <div className="w-full lg:w-1/2 text-center lg:text-left flex flex-col items-center lg:items-start space-y-4">
             <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight tracking-tight">
               ¿Listo para reservar{" "}
               <span className="text-[#fab511]">tu movilidad?</span>
@@ -88,13 +88,15 @@ export default function FinalCTA() {
 
             {/* Botón amarillo corporativo */}
             <div className="pt-2">
-              <button
-                onClick={handleWhatsAppRedirect}
+              <a
+                href="https://wa.me/51981370909?text=Hola%2C%20deseo%20consultar%20un%20servicio%20de%20transporte%20privado%20con%20Transporte%20JUVASA."
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2.5 px-8 py-4 bg-[#fab511] hover:bg-[#e2a20b] text-[#6c1323] font-black text-xs sm:text-sm uppercase tracking-wider rounded-xl transition-all shadow-[0_6px_24px_rgba(250,181,17,0.3)] hover:shadow-[0_8px_30px_rgba(250,181,17,0.5)] active:scale-95 cursor-pointer"
               >
                 <PhoneCall className="w-5 h-5 fill-[#6c1323]" />
                 Cotiza por WhatsApp
-              </button>
+              </a>
             </div>
 
             {/* Beneficios inferiores */}

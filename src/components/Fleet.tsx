@@ -50,39 +50,29 @@ export default function Fleet() {
     touchEndX.current = null;
   };
 
-  const handleReserve = (vehicleName: string, passengerCount: string) => {
-    const passengerInput = document.getElementById("num-pasajeros") as HTMLInputElement | null;
-    if (passengerInput) {
-      passengerInput.value = passengerCount;
-      passengerInput.dispatchEvent(new Event("input", { bubbles: true }));
-      passengerInput.dispatchEvent(new Event("change", { bubbles: true }));
-    }
-
-    const heroElem = document.getElementById("inicio");
-    if (heroElem) {
-      heroElem.scrollIntoView({ behavior: "smooth" });
-    }
+  const handleReserve = (vehicle: FleetItem) => {
+    const targetPhone = "51981370909";
+    const text = `Hola Transporte JUVASA, deseo reservar la unidad: *${vehicle.name}* (Capacidad: ${vehicle.capacity}). ¿Podrían brindarme información y disponibilidad?`;
+    const waUrl = `https://wa.me/${targetPhone}?text=${encodeURIComponent(text)}`;
+    const link = document.createElement("a");
+    link.href = waUrl;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
-  // Íconos generales: Cajas negras con íconos blancos
+  // Íconos generales: Ícono azul oscuro a la izquierda (el doble de grande) y nombre a la derecha, sin caja negra
   const generalFeatures = [
-    { icon: <Wind className="w-5 h-5 text-white" />, label: "Aire acondicionado" },
-    { icon: <Armchair className="w-5 h-5 text-white" />, label: "Asientos confortables" },
-    { icon: <Radio className="w-5 h-5 text-white" />, label: "Monitoreo GPS" },
-    { icon: <ShieldCheck className="w-5 h-5 text-white" />, label: "Unidades autorizadas y aseguradas" },
+    { icon: <Wind className="w-11 h-11 sm:w-12 sm:h-12 text-[#0f2e5a] shrink-0" />, label: "Aire acondicionado" },
+    { icon: <Armchair className="w-11 h-11 sm:w-12 sm:h-12 text-[#0f2e5a] shrink-0" />, label: "Asientos confortables" },
+    { icon: <Radio className="w-11 h-11 sm:w-12 sm:h-12 text-[#0f2e5a] shrink-0" />, label: "Monitoreo GPS" },
+    { icon: <ShieldCheck className="w-11 h-11 sm:w-12 sm:h-12 text-[#0f2e5a] shrink-0" />, label: "Unidades autorizadas y aseguradas" },
   ];
 
   // Render individual de tarjeta de vehículo
   const renderVehicleCard = (vehicle: FleetItem) => {
-    const defaultPax =
-      vehicle.id === "camioneta"
-        ? "4"
-        : vehicle.id === "van"
-        ? "8"
-        : vehicle.id === "sprinter-corta"
-        ? "14"
-        : "18";
-
     return (
       <div className="bg-white rounded-2xl overflow-hidden border border-gray-200/90 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between h-full group text-left">
         {/* Fotografía de la unidad */}
@@ -104,20 +94,20 @@ export default function Fleet() {
               {vehicle.name}
             </h3>
             {/* Capacidad: Más gruesa y transparente para diferenciarse de los textos de descripción */}
-            <div className="text-xs sm:text-sm font-extrabold text-black/55 tracking-normal">
+            <div className="text-xs sm:text-sm font-extrabold text-black/60 tracking-normal">
               Capacidad: {vehicle.capacity}
             </div>
             {/* Descripción en peso normal y color gris suave */}
-            <p className="text-xs sm:text-sm text-gray-600 font-sans font-normal leading-relaxed pt-1">
+            <p className="text-xs sm:text-sm text-gray-600 font-sans font-medium leading-relaxed pt-1">
               {vehicle.description}
             </p>
           </div>
 
-          {/* Botón: RESERVA (Rojo con letras blancas) */}
+          {/* Botón: RESERVA (Rojo con letras blancas) - genera mensaje a WhatsApp con vehículo seleccionado */}
           <div className="pt-2">
             <button
               type="button"
-              onClick={() => handleReserve(vehicle.name, defaultPax)}
+              onClick={() => handleReserve(vehicle)}
               className="w-full py-2.5 sm:py-3 bg-[#6c1323] hover:bg-[#520e1a] text-white font-black text-xs sm:text-sm uppercase tracking-wider rounded-xl transition-all shadow-sm hover:shadow active:scale-95 cursor-pointer text-center"
             >
               RESERVA
@@ -132,16 +122,16 @@ export default function Fleet() {
   const mobileDisplayList = [...FLEET, ...FLEET];
 
   return (
-    <section id="flota" className="py-16 sm:py-20 bg-white border-b border-gray-100">
+    <section id="flota" className="py-8 sm:py-10 bg-white border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Encabezado: NUESTRA en negro y FLOTA en rojo de la marca con letras gruesas */}
-        <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
+        <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-8">
           <h2 className="font-display text-2xl sm:text-4xl lg:text-5xl tracking-tight">
             <span className="text-gray-950 font-black">NUESTRA </span>
             <span className="text-[#6c1323] font-black">FLOTA</span>
           </h2>
-          <p className="text-gray-600 font-sans text-sm sm:text-base mt-2.5">
+          <p className="text-gray-600 font-sans text-sm sm:text-base mt-2">
             Movilidades modernas, con diferentes capacidades y el confort que cada traslado necesita.
           </p>
         </div>
@@ -218,15 +208,13 @@ export default function Fleet() {
           </div>
         </div>
 
-        {/* Franja de características generales: Cajas negras con íconos blancos, 2 filas y 2 columnas en mobile */}
-        <div className="mt-12 sm:mt-16 max-w-5xl mx-auto bg-gray-50/80 border border-gray-200/90 rounded-2xl p-5 sm:p-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 items-center text-center">
+        {/* Franja de características generales: Ícono azul oscuro a la izquierda y a la derecha el nombre, sin caja negra */}
+        <div className="mt-6 sm:mt-8 max-w-5xl mx-auto bg-gray-50/90 border border-gray-200/90 rounded-2xl p-4 sm:p-6 shadow-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 items-center">
             {generalFeatures.map((feat, idx) => (
-              <div key={idx} className="flex flex-col items-center gap-2.5 p-3 rounded-xl">
-                <div className="w-12 h-12 rounded-xl bg-black flex items-center justify-center shadow-md">
-                  {feat.icon}
-                </div>
-                <span className="text-xs sm:text-sm font-bold text-gray-800 font-sans leading-snug">
+              <div key={idx} className="flex items-center gap-3 text-left">
+                <div className="shrink-0">{feat.icon}</div>
+                <span className="text-xs sm:text-sm font-extrabold text-[#0f2e5a] font-sans leading-snug">
                   {feat.label}
                 </span>
               </div>

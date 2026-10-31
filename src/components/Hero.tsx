@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Clock, ShieldCheck, UserCheck, Headphones, PhoneCall, User, Phone, Users, Calendar, ChevronDown, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Clock, ShieldCheck, UserCheck, Headphones, Play, PhoneCall, User, Phone, Users, Calendar, ChevronDown, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function Hero() {
   const [formData, setFormData] = useState({
@@ -14,25 +14,32 @@ export default function Hero() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  const handleScrollToVideo = () => {
+    const videoSection = document.getElementById("video");
+    if (videoSection) {
+      videoSection.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  };
+
   // Carrusel de imágenes de la portada
   const heroSlides = [
     {
-      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/03-p1.webp",
+      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/x1-p1.1.webp",
       alt: "Transporte JUVASA - Portada 1",
       label: "Unidad 1",
     },
     {
-      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/03-p2.webp",
+      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/x1-p2.webp",
       alt: "Transporte JUVASA - Portada 2",
       label: "Unidad 2",
     },
     {
-      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/03-p3.webp",
+      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/x1-p3.webp",
       alt: "Transporte JUVASA - Portada 3",
       label: "Unidad 3",
     },
     {
-      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/03-p4.webp",
+      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/x1-p4.webp",
       alt: "Transporte JUVASA - Portada 4",
       label: "Unidad 4",
     },
@@ -97,7 +104,13 @@ export default function Hero() {
     const targetPhone = "51981370909";
     const rawText = "Hola, deseo cotizar un servicio de transporte privado con Transporte JUVASA.";
     const waUrl = `https://wa.me/${targetPhone}?text=${encodeURIComponent(rawText)}`;
-    window.open(waUrl, "_blank", "noopener,noreferrer");
+    const link = document.createElement("a");
+    link.href = waUrl;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {
@@ -117,7 +130,13 @@ export default function Hero() {
 
     setIsSuccess(true);
     setTimeout(() => {
-      window.open(waUrl, "_blank", "noopener,noreferrer");
+      const link = document.createElement("a");
+      link.href = waUrl;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
       setIsSuccess(false);
     }, 1200);
   };
@@ -132,7 +151,7 @@ export default function Hero() {
   return (
     <section
       id="inicio"
-      className="relative pt-[78px] pb-12 lg:pt-[96px] lg:pb-16 min-h-[92vh] flex items-center bg-black text-white overflow-hidden"
+      className="relative pt-[70px] pb-6 lg:pt-[82px] lg:pb-8 flex items-center bg-black text-white overflow-hidden"
     >
       {/* Carrusel de imágenes de la portada */}
       <div className="absolute inset-0 z-0 overflow-hidden">
@@ -155,50 +174,46 @@ export default function Hero() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
           
           {/* Lado Izquierdo: Información del Hero */}
-          <div className="lg:col-span-7 text-left space-y-4 md:space-y-6">
+          <div className="lg:col-span-7 text-left space-y-3.5 md:space-y-4">
             
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-black/40 border border-white/20 rounded-full text-[11px] font-bold text-[#fab511] tracking-wide backdrop-blur-sm">
-              <span className="w-2 h-2 rounded-full bg-[#fab511] animate-pulse" />
-              TRANSPORTE PRIVADO FORMAL Y TURÍSTICO
-            </div>
-
-            {/* H1 Principal Único */}
-            <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-[1.12] tracking-tight drop-shadow-md">
+            {/* H1 Principal Único con letras extra gruesas y sólidas */}
+            <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-[56px] font-[900] text-white leading-[1.08] tracking-tight drop-shadow-[0_4px_18px_rgba(0,0,0,0.95)]">
               Transporte privado y turístico para{" "}
-              <span className="text-[#fab511]">empresas, familias y grupos</span>
+              <span className="text-[#fab511] font-[900]">empresas, familias y grupos</span>
             </h1>
 
-            {/* Subtítulo */}
-            <p className="text-gray-100 text-sm sm:text-base lg:text-lg leading-relaxed max-w-xl font-sans drop-shadow-sm font-normal">
+            {/* Subtítulo delgado */}
+            <p className="text-white/90 text-sm sm:text-base lg:text-lg leading-relaxed max-w-xl font-sans drop-shadow-sm font-light">
               Servicio de transporte privado con movilidades modernas, conductores profesionales y atención personalizada en cada traslado.
             </p>
 
-            {/* Beneficios con íconos */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2 max-w-2xl">
+            {/* Beneficios con íconos - sin cajas negras, solo íconos con sus nombres en negrita */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-1 max-w-2xl">
               {benefits.map((b, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center gap-2 px-3 py-2 bg-black/40 border border-white/15 rounded-xl backdrop-blur-md shadow-sm"
+                  className="flex items-center gap-2 text-white"
                 >
-                  <div className="shrink-0">{b.icon}</div>
-                  <span className="text-xs font-bold text-white leading-tight">
+                  <div className="shrink-0 drop-shadow-md">{b.icon}</div>
+                  <span className="text-xs sm:text-sm font-[800] text-white drop-shadow-md leading-tight">
                     {b.label}
                   </span>
                 </div>
               ))}
             </div>
 
-            {/* Único botón principal en el Hero: Cotiza por WhatsApp */}
+            {/* Botón Ver video con scroll suave al centro de la sección de video */}
             <div className="pt-2">
               <button
-                onClick={handleWhatsAppDirect}
-                className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 bg-[#fab511] hover:bg-[#e2a20b] text-[#6c1323] font-black text-xs sm:text-sm uppercase tracking-wider rounded-xl shadow-[0_6px_20px_rgba(250,181,17,0.4)] hover:shadow-[0_8px_25px_rgba(250,181,17,0.6)] active:scale-95 transition-all cursor-pointer w-full sm:w-auto"
+                type="button"
+                onClick={handleScrollToVideo}
+                className="inline-flex items-center justify-center gap-2.5 px-8 py-3.5 bg-[#fab511] hover:bg-[#e2a20b] text-[#6c1323] font-[900] text-xs sm:text-sm uppercase tracking-wider rounded-xl shadow-[0_6px_20px_rgba(250,181,17,0.4)] hover:shadow-[0_8px_25px_rgba(250,181,17,0.6)] active:scale-95 transition-all cursor-pointer w-full sm:w-auto group"
               >
-                <PhoneCall className="w-4 h-4 fill-[#6c1323]" />
-                Cotiza por WhatsApp
+                <Play className="w-4 h-4 fill-[#6c1323] text-[#6c1323] transition-transform group-hover:scale-110" />
+                Ver video
               </button>
             </div>
           </div>
@@ -398,7 +413,7 @@ export default function Hero() {
         </div>
 
         {/* Controles e indicadores del carrusel de la portada */}
-        <div className="mt-8 pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-4">
+        <div className="mt-4 pt-2.5 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             {/* Botones flechas previo y siguiente */}
             <div className="flex items-center gap-1 bg-black/40 backdrop-blur-md p-1 rounded-full border border-white/10">

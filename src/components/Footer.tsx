@@ -35,11 +35,11 @@ export default function Footer() {
   ];
 
   return (
-    <footer id="contacto-seccion" className="bg-[#520d1a] border-t border-[#fab511]/20 text-red-100 pt-16 pb-8 text-left">
+    <footer id="contacto-seccion" className="bg-[#520d1a] border-t border-[#fab511]/20 text-red-100 pt-10 pb-6 text-left">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Columnas Principales */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-white/10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-8 border-b border-white/10">
           
           {/* Col 1: Logo oficial + presentación + redes sociales */}
           <div className="space-y-4">

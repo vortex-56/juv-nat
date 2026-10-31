@@ -22,7 +22,15 @@ function AirportPlaneIcon({ className }: { className?: string }) {
 function FamilyGroupIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-6 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm12 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-6 3.5c-2.33 0-7 1.17-7 3.5v2.5h14V14.5c0-2.33-4.67-3.5-7-3.5zm-6 2c-1.2 0-3.5.6-4.5 1.7v1.8h3v-2.1c.42-.5 1-1 1.5-1.4zm12 0c.5.4 1.08.9 1.5 1.4v2.1h3v-1.8c-1-1.1-3.3-1.7-4.5-1.7z" />
+      {/* Adult left */}
+      <circle cx="6" cy="6.5" r="2.5" />
+      <path d="M6 10.5c-2.2 0-4 1.8-4 4V20h3v-4h2v4h3v-5.5c0-2.2-1.8-4-4-4z" />
+      {/* Adult right */}
+      <circle cx="18" cy="6.5" r="2.5" />
+      <path d="M18 10.5c-2.2 0-4 1.8-4 4V20h3v-4h2v4h3v-5.5c0-2.2-1.8-4-4-4z" />
+      {/* Child center */}
+      <circle cx="12" cy="11.5" r="2" />
+      <path d="M12 14.5c-1.7 0-3 1.3-3 3V20h6v-2.5c0-1.7-1.3-3-3-3z" />
     </svg>
   );
 }
@@ -155,28 +163,17 @@ export default function Services() {
               </p>
             </div>
           </div>
-
-          {/* Botón Consultar este servicio */}
-          <div className="pt-4 mt-5 border-t border-gray-100">
-            <button
-              onClick={() => handleSelectService(service.title)}
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#6c1323] hover:text-[#fab511] transition-colors cursor-pointer group/btn"
-            >
-              <span>Consultar este servicio</span>
-              <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-1" />
-            </button>
-          </div>
         </div>
       </div>
     );
   };
 
   return (
-    <section id="servicios" className="py-16 sm:py-20 bg-white border-b border-gray-100">
+    <section id="servicios" className="py-8 sm:py-10 bg-white border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Encabezado: Sin 'PROPUESTAS A MEDIDA', sin línea amarilla, NUESTROS en negro y SERVICIOS en rojo con letra más gruesa */}
-        <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
+        <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-8">
           <h2 className="font-display text-2xl sm:text-4xl lg:text-5xl tracking-tight">
             <span className="text-gray-950 font-extrabold">NUESTROS </span>
             <span className="text-[#8b1528] font-black">SERVICIOS</span>

@@ -7,13 +7,20 @@ export default function IntroVideo() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const togglePlay = () => {
-    if (!videoRef.current) return;
     if (isPlaying) {
-      videoRef.current.pause();
+      if (videoRef.current) {
+        try {
+          videoRef.current.pause();
+        } catch {}
+      }
       setIsPlaying(false);
     } else {
-      videoRef.current.play().catch(() => {});
       setIsPlaying(true);
+      if (videoRef.current) {
+        videoRef.current.play().catch(() => {
+          // If video file has not yet been loaded or is placeholder, state still toggles gracefully
+        });
+      }
     }
   };
 
@@ -34,23 +41,23 @@ export default function IntroVideo() {
   };
 
   return (
-    <section id="video" className="py-14 sm:py-20 bg-gray-50/80 border-b border-gray-200 scroll-mt-24">
+    <section id="video" className="py-8 sm:py-10 bg-[#6c1323] text-white border-b border-[#fab511]/20 scroll-mt-10">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-14">
+        <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-12">
           
           {/* Columna Izquierda: Textos ajustados al ancho del título (centrado en mobile, a la izquierda en desktop) */}
-          <div className="w-full lg:w-auto max-w-[420px] space-y-4 text-center lg:text-left shrink-0 flex flex-col items-center lg:items-start">
+          <div className="w-full lg:w-auto max-w-[420px] space-y-3.5 text-center lg:text-left shrink-0 flex flex-col items-center lg:items-start">
             <div className="w-full">
-              <p className="text-xs sm:text-sm font-bold tracking-wider text-gray-500 uppercase mb-2">
+              <p className="text-xs sm:text-sm font-extrabold tracking-wider text-red-200 uppercase mb-1.5">
                 Conoce más de
               </p>
-              <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl xl:text-[44px] font-black text-gray-900 tracking-tight leading-tight whitespace-nowrap">
-                TRANSPORTE <span className="text-[#6c1323]">JUVASA</span>
+              <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl xl:text-[44px] font-[900] text-white tracking-tight leading-tight whitespace-nowrap drop-shadow-md">
+                TRANSPORTE <span className="text-[#fab511]">JUVASA</span>
               </h2>
             </div>
 
-            <p className="text-gray-700 font-sans text-base sm:text-lg leading-snug font-normal max-w-[390px] mx-auto lg:mx-0">
+            <p className="text-red-100 font-sans text-base sm:text-lg leading-snug font-semibold max-w-[390px] mx-auto lg:mx-0 drop-shadow-xs">
               Movilidades modernas, atención profesional y confianza en cada servicio.
             </p>
 
@@ -58,10 +65,10 @@ export default function IntroVideo() {
               <button
                 type="button"
                 onClick={togglePlay}
-                className="inline-flex items-center gap-2.5 bg-[#fab511] hover:bg-[#e0a20e] text-[#6c1323] font-black px-6 py-3.5 rounded-xl shadow-md hover:shadow-xl transition-all duration-200 text-sm sm:text-base uppercase tracking-wider group cursor-pointer"
+                className="inline-flex items-center gap-2.5 bg-[#fab511] hover:bg-[#e0a20e] text-[#6c1323] font-[900] px-7 py-3 rounded-xl shadow-md hover:shadow-xl transition-all duration-200 text-sm sm:text-base uppercase tracking-wider group cursor-pointer active:scale-95"
               >
                 <CirclePlay className="w-5 h-5 shrink-0 stroke-[2.5]" />
-                <span>{isPlaying ? "Pausar video ||" : "Ver video >"}</span>
+                <span>{isPlaying ? "Pausar video" : "Ver ahora"}</span>
               </button>
             </div>
           </div>
@@ -70,7 +77,7 @@ export default function IntroVideo() {
           <div className="w-full flex justify-center lg:justify-start lg:w-auto">
             <div
               ref={containerRef}
-              className="relative w-full max-w-[380px] sm:max-w-[420px] lg:max-w-[450px] aspect-square rounded-2xl bg-black border-4 border-[#6c1323]/15 overflow-hidden shadow-2xl group cursor-pointer"
+              className="relative w-full max-w-[360px] sm:max-w-[400px] lg:max-w-[430px] aspect-square rounded-2xl bg-black border-4 border-white/20 overflow-hidden shadow-2xl group cursor-pointer"
               onClick={togglePlay}
             >
               <video
