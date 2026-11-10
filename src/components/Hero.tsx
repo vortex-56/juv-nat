@@ -12,6 +12,9 @@ export default function Hero() {
   const [countryCode, setCountryCode] = useState("+51");
   const [showCodeDropdown, setShowCodeDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const heroSectionRef = useRef<HTMLElement>(null);
+  const formCardRef = useRef<HTMLDivElement>(null);
+  const [carouselHeight, setCarouselHeight] = useState<number | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
 
   const handleScrollToVideo = () => {
@@ -87,6 +90,46 @@ export default function Hero() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Ajuste en mobile para que el carrusel se extienda solo hasta donde comienza el formulario
+  useEffect(() => {
+    const updateCarouselHeight = () => {
+      if (typeof window !== "undefined" && window.innerWidth < 1024) {
+        if (formCardRef.current && heroSectionRef.current) {
+          const formRect = formCardRef.current.getBoundingClientRect();
+          const heroRect = heroSectionRef.current.getBoundingClientRect();
+          const height = formRect.top - heroRect.top;
+          if (height > 50) {
+            setCarouselHeight(Math.round(height));
+          }
+        }
+      } else {
+        setCarouselHeight(null);
+      }
+    };
+
+    updateCarouselHeight();
+
+    const timer = setTimeout(updateCarouselHeight, 150);
+    window.addEventListener("resize", updateCarouselHeight);
+
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined" && heroSectionRef.current) {
+      resizeObserver = new ResizeObserver(() => {
+        updateCarouselHeight();
+      });
+      resizeObserver.observe(heroSectionRef.current);
+      if (formCardRef.current) {
+        resizeObserver.observe(formCardRef.current);
+      }
+    }
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("resize", updateCarouselHeight);
+      resizeObserver?.disconnect();
+    };
+  }, []);
+
   const getCountryEmoji = (code: string) => {
     const trimmed = code.trim();
     if (!trimmed) return "🌐";
@@ -151,10 +194,16 @@ export default function Hero() {
   return (
     <section
       id="inicio"
+      ref={heroSectionRef}
       className="relative pt-[70px] pb-6 lg:pt-[82px] lg:pb-8 flex items-center bg-black text-white overflow-hidden"
     >
       {/* Carrusel de imágenes de la portada */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
+      <div
+        style={{
+          height: carouselHeight ? `${carouselHeight}px` : undefined,
+        }}
+        className="absolute top-0 left-0 right-0 z-0 overflow-hidden lg:inset-0 lg:!h-full"
+      >
         {heroSlides.map((slide, idx) => (
           <div
             key={slide.url}
@@ -169,8 +218,8 @@ export default function Hero() {
             />
           </div>
         ))}
-        {/* Capa negra transparente para apreciar claramente las unidades manteniendo alta legibilidad */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-black/35 lg:bg-gradient-to-r lg:from-black/75 lg:via-black/45 lg:to-black/25 z-[2]" />
+        {/* Capa de degradado: en mobile tiene un degradado a negro puro (#000000) antes del formulario para fundirse de forma perfecta con el fondo negro del formulario, y en desktop degradado lateral */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/30 via-50% to-[#000000] lg:bg-gradient-to-r lg:from-black/75 lg:via-black/45 lg:to-black/25 z-[2]" />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
@@ -218,35 +267,35 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Lado Derecho: Formulario Hero "CONSULTA TU SERVICIO" */}
-          <div className="lg:col-span-5 w-full max-w-md mx-auto lg:ml-auto">
-            <div className="bg-white text-gray-900 rounded-2xl p-5 sm:p-7 shadow-2xl border border-gray-100 relative overflow-hidden">
+          {/* Lado Derecho: Formulario Hero "CONSULTA TU SERVICIO" - bajado para separarse del menú y con altura más compacta */}
+          <div className="lg:col-span-5 w-full max-w-md mx-auto lg:ml-auto pt-3 sm:pt-4 lg:pt-6">
+            <div ref={formCardRef} className="bg-white text-gray-900 rounded-2xl p-4 sm:p-5 shadow-2xl border border-gray-150 relative overflow-hidden">
               
               {isSuccess && (
-                <div className="absolute inset-0 bg-white/95 backdrop-blur-sm z-30 flex flex-col items-center justify-center p-6 text-center">
-                  <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center border border-emerald-500 mb-3">
-                    <CheckCircle2 className="w-6 h-6 text-emerald-600" />
+                <div className="absolute inset-0 bg-white/95 backdrop-blur-sm z-30 flex flex-col items-center justify-center p-5 text-center">
+                  <div className="w-11 h-11 rounded-full bg-emerald-100 flex items-center justify-center border border-emerald-500 mb-2">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                   </div>
-                  <h3 className="font-display text-base font-bold text-gray-900">¡Consulta Generada!</h3>
+                  <h3 className="font-display text-sm font-bold text-gray-900">¡Consulta Generada!</h3>
                   <p className="text-xs text-gray-600 mt-1 max-w-xs leading-relaxed">
                     Conectando con WhatsApp para enviarle la información directa a nuestro equipo.
                   </p>
                 </div>
               )}
 
-              <div className="text-left mb-4">
-                <h3 className="font-display text-base sm:text-lg font-black text-[#6c1323] tracking-wide uppercase">
+              <div className="text-left mb-2.5">
+                <h3 className="font-display text-base font-black text-[#6c1323] tracking-wide uppercase">
                   CONSULTA TU SERVICIO
                 </h3>
-                <p className="text-xs font-sans text-gray-500 mt-0.5">
-                  Completa los datos y te atendemos de inmediato
+                <p className="text-[11px] font-sans text-gray-500 mt-0.5">
+                  Completa tus datos y cuéntanos qué servicio necesitas
                 </p>
               </div>
 
-              <form onSubmit={handleFormSubmit} className="space-y-3 text-left">
+              <form onSubmit={handleFormSubmit} className="space-y-2.5 text-left">
                 {/* Nombre completo */}
                 <div>
-                  <label className="text-[10px] font-black text-gray-700 uppercase tracking-wider block mb-1">
+                  <label className="text-[10px] font-black text-gray-700 uppercase tracking-wider block mb-0.5">
                     Nombre completo *
                   </label>
                   <div className="relative">
@@ -257,20 +306,20 @@ export default function Hero() {
                       placeholder="Ej. Carlos Mendoza"
                       value={formData.fullName}
                       onChange={handleChange}
-                      className="w-full pr-8 pl-3 py-2 text-xs text-gray-900 border border-gray-200 rounded-lg outline-none focus:border-[#6c1323] bg-gray-50 focus:bg-white transition-all font-sans font-medium"
+                      className="w-full pr-8 pl-3 py-1.5 text-xs text-gray-900 border border-gray-200 rounded-lg outline-none focus:border-[#6c1323] bg-gray-50 focus:bg-white transition-all font-sans font-medium"
                     />
-                    <User className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                    <User className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
                   </div>
                 </div>
 
                 {/* Teléfono o WhatsApp con selector de prefijo internacional */}
                 <div>
-                  <label className="text-[10px] font-black text-gray-700 uppercase tracking-wider block mb-1">
+                  <label className="text-[10px] font-black text-gray-700 uppercase tracking-wider block mb-0.5">
                     Teléfono o WhatsApp *
                   </label>
                   <div className="flex gap-1.5 font-sans">
                     <div className="relative w-[36%] shrink-0" ref={dropdownRef}>
-                      <div className="flex items-center gap-1 w-full px-2 py-2 text-xs text-gray-950 border border-gray-200 rounded-lg bg-gray-50 focus-within:bg-white focus-within:border-[#6c1323] transition-all">
+                      <div className="flex items-center gap-1 w-full px-2 py-1.5 text-xs text-gray-950 border border-gray-200 rounded-lg bg-gray-50 focus-within:bg-white focus-within:border-[#6c1323] transition-all">
                         <span className="text-sm">{getCountryEmoji(countryCode)}</span>
                         <input
                           type="text"
@@ -323,16 +372,16 @@ export default function Hero() {
                         placeholder="Ej. 981 370 909"
                         value={formData.contact}
                         onChange={handleChange}
-                        className="w-full pr-8 pl-3 py-2 text-xs text-gray-900 border border-gray-200 rounded-lg outline-none focus:border-[#6c1323] bg-gray-50 focus:bg-white transition-all font-sans font-medium"
+                        className="w-full pr-8 pl-3 py-1.5 text-xs text-gray-900 border border-gray-200 rounded-lg outline-none focus:border-[#6c1323] bg-gray-50 focus:bg-white transition-all font-sans font-medium"
                       />
-                      <Phone className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                      <Phone className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
                     </div>
                   </div>
                 </div>
 
                 {/* Tipo de servicio (opcional) */}
                 <div>
-                  <label className="text-[10px] font-black text-gray-700 uppercase tracking-wider block mb-1">
+                  <label className="text-[10px] font-black text-gray-700 uppercase tracking-wider block mb-0.5">
                     Tipo de servicio (Opcional)
                   </label>
                   <div className="relative">
@@ -341,7 +390,7 @@ export default function Hero() {
                       name="serviceType"
                       value={formData.serviceType}
                       onChange={handleChange}
-                      className="w-full pr-8 pl-3 py-2 text-xs text-gray-900 border border-gray-200 rounded-lg outline-none focus:border-[#6c1323] bg-gray-50 focus:bg-white transition-all font-sans cursor-pointer appearance-none font-medium"
+                      className="w-full pr-8 pl-3 py-1.5 text-xs text-gray-900 border border-gray-200 rounded-lg outline-none focus:border-[#6c1323] bg-gray-50 focus:bg-white transition-all font-sans cursor-pointer appearance-none font-medium"
                     >
                       <option value="">Selecciona una opción</option>
                       <option value="Transporte corporativo y ejecutivo">Transporte corporativo y ejecutivo</option>
@@ -352,13 +401,13 @@ export default function Hero() {
                       <option value="Transporte para grupos y delegaciones">Transporte para grupos y delegaciones</option>
                       <option value="Otros servicios">Otros servicios</option>
                     </select>
-                    <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                    <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
                   </div>
                 </div>
 
                 {/* Fecha del servicio (opcional) */}
                 <div>
-                  <label className="text-[10px] font-black text-gray-700 uppercase tracking-wider block mb-1">
+                  <label className="text-[10px] font-black text-gray-700 uppercase tracking-wider block mb-0.5">
                     Fecha del servicio (Opcional)
                   </label>
                   <div className="relative">
@@ -367,15 +416,15 @@ export default function Hero() {
                       name="serviceDate"
                       value={formData.serviceDate}
                       onChange={handleChange}
-                      className="w-full pr-8 pl-3 py-2 text-xs text-gray-900 border border-gray-200 rounded-lg outline-none focus:border-[#6c1323] bg-gray-50 focus:bg-white transition-all font-sans font-medium"
+                      className="w-full pr-8 pl-3 py-1.5 text-xs text-gray-900 border border-gray-200 rounded-lg outline-none focus:border-[#6c1323] bg-gray-50 focus:bg-white transition-all font-sans font-medium"
                     />
-                    <Calendar className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                    <Calendar className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
                   </div>
                 </div>
 
                 {/* Número de pasajeros */}
                 <div>
-                  <label className="text-[10px] font-black text-gray-700 uppercase tracking-wider block mb-1">
+                  <label className="text-[10px] font-black text-gray-700 uppercase tracking-wider block mb-0.5">
                     Número de pasajeros *
                   </label>
                   <div className="relative">
@@ -388,22 +437,22 @@ export default function Hero() {
                       placeholder="Ej. 8"
                       value={formData.passengers}
                       onChange={handleChange}
-                      className="w-full pr-8 pl-3 py-2 text-xs text-gray-900 border border-gray-200 rounded-lg outline-none focus:border-[#6c1323] bg-gray-50 focus:bg-white transition-all font-sans font-medium"
+                      className="w-full pr-8 pl-3 py-1.5 text-xs text-gray-900 border border-gray-200 rounded-lg outline-none focus:border-[#6c1323] bg-gray-50 focus:bg-white transition-all font-sans font-medium"
                     />
-                    <Users className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                    <Users className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
                   </div>
                 </div>
 
                 {/* Botón ENVIAR CONSULTA */}
-                <div className="pt-2">
+                <div className="pt-1.5">
                   <button
                     type="submit"
-                    className="w-full py-3 bg-[#6c1323] hover:bg-[#85182c] text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-md active:scale-95 cursor-pointer flex items-center justify-center gap-2"
+                    className="w-full py-2.5 bg-[#6c1323] hover:bg-[#85182c] text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-md active:scale-95 cursor-pointer flex items-center justify-center gap-2"
                   >
                     ENVIAR CONSULTA
                   </button>
-                  <p className="text-[10px] text-gray-500 font-sans text-center mt-2">
-                    Respuesta rápida y directa a tu WhatsApp
+                  <p className="text-[10px] text-gray-500 font-sans text-center mt-1.5">
+                    Te contactaremos directamente por WhatsApp · Reservas Lun–Sáb 8:00–18:00
                   </p>
                 </div>
               </form>
