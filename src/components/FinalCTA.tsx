@@ -40,9 +40,9 @@ export default function FinalCTA() {
   }, [slides.length]);
 
   const benefits = [
-    { icon: <Clock className="w-4 h-4 text-[#fab511]" />, text: "Atención 24/7" },
+    { icon: <Clock className="w-4 h-4 text-[#fab511]" />, text: "Operaciones 24/7" },
     { icon: <UserCheck className="w-4 h-4 text-[#fab511]" />, text: "Atención personalizada" },
-    { icon: <ShieldCheck className="w-4 h-4 text-[#fab511]" />, text: "Sin compromiso" },
+    { icon: <ShieldCheck className="w-4 h-4 text-[#fab511]" />, text: "Coordinación directa" },
   ];
 
   return (
@@ -83,7 +83,7 @@ export default function FinalCTA() {
             </h2>
             
             <p className="text-base sm:text-lg text-gray-300 font-sans leading-relaxed max-w-xl">
-              Consulta tu servicio de transporte privado y recibe atención inmediata por WhatsApp.
+              Consulta tu servicio de transporte privado y recibe atención por WhatsApp.
             </p>
 
             {/* Botón amarillo corporativo */}

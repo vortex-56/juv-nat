@@ -188,7 +188,7 @@ export default function Hero() {
     { icon: <Clock className="w-4 h-4 text-[#fab511]" />, label: "Puntualidad" },
     { icon: <ShieldCheck className="w-4 h-4 text-[#fab511]" />, label: "Seguridad" },
     { icon: <UserCheck className="w-4 h-4 text-[#fab511]" />, label: "Conductores profesionales" },
-    { icon: <Headphones className="w-4 h-4 text-[#fab511]" />, label: "Atención 24/7" },
+    { icon: <Headphones className="w-4 h-4 text-[#fab511]" />, label: "Operaciones 24/7" },
   ];
 
   return (

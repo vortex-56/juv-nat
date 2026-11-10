@@ -134,7 +134,7 @@ export default function Footer() {
                 className="flex items-center gap-2.5 hover:text-[#fab511] transition-colors"
               >
                 <Mail className="w-4 h-4 text-[#fab511] shrink-0" />
-                <span className="truncate">Correo: reservas@transportejuvasa.com.pe</span>
+                <span className="break-words">Correo: reservas@transportejuvasa.com.pe</span>
               </a>
               <div className="flex items-center gap-2.5">
                 <MapPin className="w-4 h-4 text-[#fab511] shrink-0" />

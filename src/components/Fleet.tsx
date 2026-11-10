@@ -50,9 +50,24 @@ export default function Fleet() {
     touchEndX.current = null;
   };
 
+  const getVehicleWhatsAppMessage = (id: string) => {
+    switch (id) {
+      case "camioneta":
+        return "¡Hola! Estoy interesado/a en el servicio de transporte en una Camioneta y desearía recibir mayor información.🇵🇪";
+      case "van":
+        return "¡Hola! Estoy interesado/a en el servicio de transporte en una Van y desearía recibir mayor información.🇵🇪";
+      case "sprinter-corta":
+        return "¡Hola! Estoy interesado/a en el servicio de transporte en una Sprinter Corta y desearía recibir mayor información.🇵🇪";
+      case "sprinter-larga":
+        return "¡Hola! Estoy interesado/a en el servicio de transporte en una Sprinter Larga y desearía recibir mayor información.🇵🇪";
+      default:
+        return "¡Hola! Estoy interesado/a en el servicio de transporte y desearía recibir mayor información.🇵🇪";
+    }
+  };
+
   const handleReserve = (vehicle: FleetItem) => {
     const targetPhone = "51981370909";
-    const text = `Hola Transporte JUVASA, deseo reservar la unidad: *${vehicle.name}* (Capacidad: ${vehicle.capacity}). ¿Podrían brindarme información y disponibilidad?`;
+    const text = getVehicleWhatsAppMessage(vehicle.id);
     const waUrl = `https://wa.me/${targetPhone}?text=${encodeURIComponent(text)}`;
     const link = document.createElement("a");
     link.href = waUrl;
@@ -110,7 +125,7 @@ export default function Fleet() {
               onClick={() => handleReserve(vehicle)}
               className="w-full py-2.5 sm:py-3 bg-[#6c1323] hover:bg-[#520e1a] text-white font-black text-xs sm:text-sm uppercase tracking-wider rounded-xl transition-all shadow-sm hover:shadow active:scale-95 cursor-pointer text-center"
             >
-              RESERVA
+              RESERVAR
             </button>
           </div>
         </div>

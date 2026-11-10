@@ -95,7 +95,7 @@ export const FLEET: FleetItem[] = [
   {
     id: "camioneta",
     name: "CAMIONETA",
-    capacity: "4–6 pasajeros",
+    capacity: "1–6 pasajeros",
     description: "Una opción cómoda y versátil para traslados ejecutivos y grupos pequeños.",
     imageUrl: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/x1-a1.webp",
   },
