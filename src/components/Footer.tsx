@@ -43,14 +43,26 @@ export default function Footer() {
           
           {/* Col 1: Logo oficial + presentación + redes sociales */}
           <div className="space-y-4">
-            <div className="flex items-center cursor-pointer" onClick={() => scrollToSection("inicio")}>
+            <a 
+              href="#inicio" 
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection("inicio");
+              }} 
+              aria-label="Transporte JUVASA - Inicio"
+              className="inline-block cursor-pointer"
+            >
               <img 
                 src="https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/logo01.webp"
                 alt="Logo oficial Transporte JUVASA"
+                width="168"
+                height="48"
+                loading="lazy"
+                decoding="async"
                 className="h-12 w-auto object-contain transition-transform hover:scale-102"
                 referrerPolicy="no-referrer"
               />
-            </div>
+            </a>
             
             <p className="text-xs sm:text-sm text-red-200/90 font-sans leading-relaxed">
               Brindamos servicios de transporte privado y turístico con seguridad, puntualidad y atención personalizada.
@@ -71,13 +83,14 @@ export default function Footer() {
 
           {/* Col 2: Enlaces rápidos */}
           <div className="space-y-4">
-            <h4 className="font-display text-sm font-extrabold text-white uppercase tracking-wider">
+            <p className="font-display text-sm font-extrabold text-white uppercase tracking-wider">
               Enlaces rápidos
-            </h4>
+            </p>
             <ul className="space-y-2">
               {navLinks.map((link) => (
                 <li key={link.target}>
                   <button
+                    type="button"
                     onClick={() => scrollToSection(link.target)}
                     className="text-xs sm:text-sm text-red-200 hover:text-[#fab511] transition-colors cursor-pointer block text-left"
                   >
@@ -90,13 +103,14 @@ export default function Footer() {
 
           {/* Col 3: Servicios */}
           <div className="space-y-4">
-            <h4 className="font-display text-sm font-extrabold text-white uppercase tracking-wider">
+            <p className="font-display text-sm font-extrabold text-white uppercase tracking-wider">
               Servicios
-            </h4>
+            </p>
             <ul className="space-y-2">
               {servicesList.map((service, index) => (
                 <li key={index}>
                   <button
+                    type="button"
                     onClick={() => {
                       const select = document.getElementById("tipo-servicio") as HTMLSelectElement | null;
                       if (select) {
@@ -116,28 +130,30 @@ export default function Footer() {
 
           {/* Col 4: Contacto */}
           <div className="space-y-4">
-            <h4 className="font-display text-sm font-extrabold text-white uppercase tracking-wider">
+            <p className="font-display text-sm font-extrabold text-white uppercase tracking-wider">
               Contacto
-            </h4>
+            </p>
             <div className="space-y-3 text-xs sm:text-sm text-red-100 font-sans">
               <a 
                 href="https://wa.me/51981370909" 
                 target="_blank" 
                 rel="noopener noreferrer"
+                aria-label="Contactar por WhatsApp al +51 981 370 909"
                 className="flex items-center gap-2.5 hover:text-[#fab511] transition-colors"
               >
-                <Phone className="w-4 h-4 text-[#fab511] shrink-0" />
+                <Phone className="w-4 h-4 text-[#fab511] shrink-0" aria-hidden="true" />
                 <span>WhatsApp: +51 981 370 909</span>
               </a>
               <a 
                 href="mailto:reservas@transportejuvasa.com.pe" 
+                aria-label="Enviar correo a reservas@transportejuvasa.com.pe"
                 className="flex items-center gap-2.5 hover:text-[#fab511] transition-colors"
               >
-                <Mail className="w-4 h-4 text-[#fab511] shrink-0" />
+                <Mail className="w-4 h-4 text-[#fab511] shrink-0" aria-hidden="true" />
                 <span className="break-words">Correo: reservas@transportejuvasa.com.pe</span>
               </a>
               <div className="flex items-center gap-2.5">
-                <MapPin className="w-4 h-4 text-[#fab511] shrink-0" />
+                <MapPin className="w-4 h-4 text-[#fab511] shrink-0" aria-hidden="true" />
                 <span>Ubicación: Lima, Perú</span>
               </div>
             </div>

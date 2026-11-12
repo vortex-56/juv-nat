@@ -59,6 +59,10 @@ export default function FinalCTA() {
             <img
               src={slide.url}
               alt={slide.alt}
+              width="960"
+              height="640"
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover object-center"
               referrerPolicy="no-referrer"
             />
@@ -92,9 +96,10 @@ export default function FinalCTA() {
                 href="https://wa.me/51981370909?text=Hola%2C%20deseo%20consultar%20un%20servicio%20de%20transporte%20privado%20con%20Transporte%20JUVASA."
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Cotiza por WhatsApp al +51 981 370 909"
                 className="inline-flex items-center gap-2.5 px-8 py-4 bg-[#fab511] hover:bg-[#e2a20b] text-[#6c1323] font-black text-xs sm:text-sm uppercase tracking-wider rounded-xl transition-all shadow-[0_6px_24px_rgba(250,181,17,0.3)] hover:shadow-[0_8px_30px_rgba(250,181,17,0.5)] active:scale-95 cursor-pointer"
               >
-                <PhoneCall className="w-5 h-5 fill-[#6c1323]" />
+                <PhoneCall className="w-5 h-5 fill-[#6c1323]" aria-hidden="true" />
                 Cotiza por WhatsApp
               </a>
             </div>

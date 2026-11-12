@@ -20,8 +20,18 @@ export default function IntroVideo() {
   const [isMuted, setIsMuted] = useState(false);
   const [showControls, setShowControls] = useState(true);
 
+  const sectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const hideControlsTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Reiniciar temporizador para ocultar controles en modo maximizado tras inactividad (2.5s)
+  const kickControlsTimer = () => {
+    setShowControls(true);
+    if (hideControlsTimerRef.current) clearTimeout(hideControlsTimerRef.current);
+    hideControlsTimerRef.current = setTimeout(() => {
+      setShowControls(false);
+    }, 2500);
+  };
 
   // Alternar reproducción / pausa
   const togglePlay = () => {
@@ -29,16 +39,29 @@ export default function IntroVideo() {
     if (videoRef.current.paused) {
       videoRef.current.play().catch(() => {});
       setIsPlaying(true);
+      if (isMaximized) kickControlsTimer();
     } else {
       videoRef.current.pause();
       setIsPlaying(false);
+      setShowControls(true);
+      if (hideControlsTimerRef.current) clearTimeout(hideControlsTimerRef.current);
     }
   };
 
   // Tocar o dar clic en el video pausa o continúa
   const handleVideoClick = (e: MouseEvent) => {
     e.stopPropagation();
-    togglePlay();
+    if (isMaximized) {
+      // En maximizado, si los controles estaban ocultos, el primer tap solo los muestra
+      if (!showControls) {
+        kickControlsTimer();
+        return;
+      }
+      togglePlay();
+      kickControlsTimer();
+    } else {
+      togglePlay();
+    }
   };
 
   // Avanzar o retroceder segundos
@@ -48,6 +71,7 @@ export default function IntroVideo() {
       const targetTime = videoRef.current.currentTime + seconds;
       videoRef.current.currentTime = Math.max(0, Math.min(targetTime, videoRef.current.duration || 0));
       setCurrentTime(videoRef.current.currentTime);
+      if (isMaximized) kickControlsTimer();
     }
   };
 
@@ -55,6 +79,7 @@ export default function IntroVideo() {
   const handleMaximize = (e: MouseEvent) => {
     e.stopPropagation();
     setIsMaximized(true);
+    kickControlsTimer();
     if (videoRef.current && videoRef.current.paused) {
       videoRef.current.play().catch(() => {});
       setIsPlaying(true);
@@ -65,6 +90,8 @@ export default function IntroVideo() {
   const handleMinimize = (e?: MouseEvent) => {
     if (e) e.stopPropagation();
     setIsMaximized(false);
+    setShowControls(true);
+    if (hideControlsTimerRef.current) clearTimeout(hideControlsTimerRef.current);
   };
 
   // Alternar audio
@@ -73,6 +100,7 @@ export default function IntroVideo() {
     if (videoRef.current) {
       videoRef.current.muted = !videoRef.current.muted;
       setIsMuted(videoRef.current.muted);
+      if (isMaximized) kickControlsTimer();
     }
   };
 
@@ -82,6 +110,7 @@ export default function IntroVideo() {
     if (videoRef.current) {
       videoRef.current.currentTime = time;
       setCurrentTime(time);
+      if (isMaximized) kickControlsTimer();
     }
   };
 
@@ -93,12 +122,41 @@ export default function IntroVideo() {
     return `${mins}:${remainingSecs < 10 ? "0" : ""}${remainingSecs}`;
   };
 
+  // Si alguien reprodujo el video y sube o baja de la sección, el video se detiene
+  useEffect(() => {
+    const targetElement = sectionRef.current;
+    if (!targetElement) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting && !isMaximized) {
+            if (videoRef.current && !videoRef.current.paused) {
+              videoRef.current.pause();
+              setIsPlaying(false);
+            }
+          }
+        });
+      },
+      {
+        threshold: 0.15,
+      }
+    );
+
+    observer.observe(targetElement);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [isMaximized]);
+
   // Cerrar con Escape y atajos cuando está maximizado
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isMaximized) return;
       if (e.key === "Escape") {
         setIsMaximized(false);
+        setShowControls(true);
       } else if (e.key === " ") {
         e.preventDefault();
         togglePlay();
@@ -115,19 +173,17 @@ export default function IntroVideo() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isMaximized, isPlaying]);
 
-  // Manejar visibilidad de controles en maximizado
-  const handleMouseMoveMaximized = () => {
-    setShowControls(true);
-    if (hideControlsTimerRef.current) clearTimeout(hideControlsTimerRef.current);
-    if (isPlaying) {
-      hideControlsTimerRef.current = setTimeout(() => {
-        setShowControls(false);
-      }, 3500);
-    }
+  // Manejar movimiento de mouse o toque en maximizado
+  const handleActivityMaximized = () => {
+    kickControlsTimer();
   };
 
   return (
-    <section id="video" className="py-8 sm:py-10 bg-[#6c1323] text-white border-b border-[#fab511]/20 scroll-mt-10">
+    <section
+      id="video"
+      ref={sectionRef}
+      className="py-8 sm:py-10 bg-[#6c1323] text-white border-b border-[#fab511]/20 scroll-mt-10"
+    >
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-12">
@@ -152,16 +208,17 @@ export default function IntroVideo() {
               <button
                 type="button"
                 onClick={togglePlay}
+                aria-label={isPlaying ? "Pausar video Transporte JUVASA" : "Ver video de Transporte JUVASA"}
                 className="inline-flex items-center gap-2.5 bg-[#fab511] hover:bg-[#e0a20e] text-[#6c1323] font-[900] px-7 py-3 rounded-xl shadow-md hover:shadow-xl transition-all duration-200 text-sm sm:text-base uppercase tracking-wider group cursor-pointer active:scale-95"
               >
                 {isPlaying ? (
                   <>
-                    <Pause className="w-5 h-5 shrink-0 fill-[#6c1323]" />
+                    <Pause className="w-5 h-5 shrink-0 fill-[#6c1323]" aria-hidden="true" />
                     <span>Pausar video</span>
                   </>
                 ) : (
                   <>
-                    <CirclePlay className="w-5 h-5 shrink-0 stroke-[2.5]" />
+                    <CirclePlay className="w-5 h-5 shrink-0 stroke-[2.5]" aria-hidden="true" />
                     <span>Ver ahora</span>
                   </>
                 )}
@@ -181,7 +238,8 @@ export default function IntroVideo() {
                     ? "fixed inset-0 z-[9999] bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-3 sm:p-6 select-none"
                     : "relative w-full h-full aspect-square rounded-2xl bg-black border-4 border-white/20 overflow-hidden shadow-2xl group cursor-pointer"
                 }
-                onMouseMove={isMaximized ? handleMouseMoveMaximized : undefined}
+                onMouseMove={isMaximized ? handleActivityMaximized : undefined}
+                onTouchStart={isMaximized ? handleActivityMaximized : undefined}
                 onClick={isMaximized ? handleVideoClick : undefined}
               >
                 
@@ -196,6 +254,7 @@ export default function IntroVideo() {
                 >
                   <video
                     ref={videoRef}
+                    preload="none"
                     src="https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/ejem01.mp4"
                     poster="https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/00-portada.webp"
                     className="w-full h-full object-cover select-none pointer-events-none"
@@ -223,9 +282,9 @@ export default function IntroVideo() {
                   >
                     <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#fab511] text-[#6c1323] flex items-center justify-center shadow-2xl transform scale-95 group-hover:scale-105 transition-all duration-300">
                       {isPlaying ? (
-                        <Pause className="w-8 h-8 fill-[#6c1323]" />
+                        <Pause className="w-8 h-8 fill-[#6c1323]" aria-hidden="true" />
                       ) : (
-                        <Play className="w-8 h-8 fill-[#6c1323] ml-1" />
+                        <Play className="w-8 h-8 fill-[#6c1323] ml-1" aria-hidden="true" />
                       )}
                     </div>
                   </div>
@@ -239,15 +298,8 @@ export default function IntroVideo() {
                       title="Agrandar video 1:1"
                       aria-label="Agrandar video 1:1"
                     >
-                      <Maximize className="w-4 h-4 sm:w-5 sm:h-5 text-[#fab511]" />
+                      <Maximize className="w-4 h-4 sm:w-5 sm:h-5 text-[#fab511]" aria-hidden="true" />
                     </button>
-                  )}
-
-                  {/* Modo normal: Etiqueta inferior */}
-                  {!isMaximized && (
-                    <div className="absolute bottom-3 left-3 bg-black/75 backdrop-blur-md border border-white/10 px-3.5 py-1.5 rounded-xl text-xs text-white font-sans font-semibold pointer-events-none">
-                      Transporte JUVASA · Flota & Servicios
-                    </div>
                   )}
 
                   {/* Modo Maximizado: Barra de controles flotante sobre el video */}
@@ -268,6 +320,7 @@ export default function IntroVideo() {
                           step="0.1"
                           value={currentTime}
                           onChange={handleSeek}
+                          aria-label="Línea de tiempo del video"
                           className="flex-1 h-1.5 bg-white/30 rounded-lg appearance-none cursor-pointer accent-[#fab511]"
                         />
                         <span>{formatTime(duration)}</span>
@@ -282,11 +335,12 @@ export default function IntroVideo() {
                           onClick={toggleMute}
                           className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer flex items-center gap-1.5"
                           title={isMuted ? "Activar audio" : "Silenciar"}
+                          aria-label={isMuted ? "Activar audio" : "Silenciar"}
                         >
                           {isMuted ? (
-                            <VolumeX className="w-4 h-4 text-red-300" />
+                            <VolumeX className="w-4 h-4 text-red-300" aria-hidden="true" />
                           ) : (
-                            <Volume2 className="w-4 h-4 text-[#fab511]" />
+                            <Volume2 className="w-4 h-4 text-[#fab511]" aria-hidden="true" />
                           )}
                         </button>
 
@@ -298,8 +352,9 @@ export default function IntroVideo() {
                             onClick={(e) => handleSkip(-5, e)}
                             className="flex items-center gap-1 px-3 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-white font-bold text-xs uppercase transition-all active:scale-95 cursor-pointer border border-white/10"
                             title="Retroceder 5 segundos"
+                            aria-label="Retroceder 5 segundos"
                           >
-                            <RotateCcw className="w-4 h-4 text-[#fab511]" />
+                            <RotateCcw className="w-4 h-4 text-[#fab511]" aria-hidden="true" />
                             <span>-5s</span>
                           </button>
 
@@ -312,11 +367,12 @@ export default function IntroVideo() {
                             }}
                             className="w-12 h-12 rounded-full bg-[#fab511] hover:bg-[#e0a20e] text-[#6c1323] flex items-center justify-center shadow-lg transition-all active:scale-90 cursor-pointer"
                             title={isPlaying ? "Detener video" : "Continuar video"}
+                            aria-label={isPlaying ? "Detener video" : "Continuar video"}
                           >
                             {isPlaying ? (
-                              <Pause className="w-6 h-6 fill-[#6c1323]" />
+                              <Pause className="w-6 h-6 fill-[#6c1323]" aria-hidden="true" />
                             ) : (
-                              <Play className="w-6 h-6 fill-[#6c1323] ml-0.5" />
+                              <Play className="w-6 h-6 fill-[#6c1323] ml-0.5" aria-hidden="true" />
                             )}
                           </button>
 
@@ -326,9 +382,10 @@ export default function IntroVideo() {
                             onClick={(e) => handleSkip(5, e)}
                             className="flex items-center gap-1 px-3 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-white font-bold text-xs uppercase transition-all active:scale-95 cursor-pointer border border-white/10"
                             title="Avanzar 5 segundos"
+                            aria-label="Avanzar 5 segundos"
                           >
                             <span>+5s</span>
-                            <RotateCw className="w-4 h-4 text-[#fab511]" />
+                            <RotateCw className="w-4 h-4 text-[#fab511]" aria-hidden="true" />
                           </button>
                         </div>
 
@@ -338,8 +395,9 @@ export default function IntroVideo() {
                           onClick={handleMinimize}
                           className="flex items-center gap-1 px-2.5 sm:px-3 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-white text-xs font-bold transition-colors cursor-pointer border border-white/10"
                           title="Volver a hacer pequeño el video (Esc)"
+                          aria-label="Minimizar video y volver al tamaño normal"
                         >
-                          <Minimize2 className="w-4 h-4 text-[#fab511]" />
+                          <Minimize2 className="w-4 h-4 text-[#fab511]" aria-hidden="true" />
                           <span className="hidden sm:inline">Minimizar</span>
                         </button>
                       </div>
@@ -354,8 +412,9 @@ export default function IntroVideo() {
                       onClick={handleMinimize}
                       className="absolute top-3 right-3 bg-black/70 hover:bg-black text-white p-2 sm:p-2.5 rounded-xl border border-white/20 shadow-xl transition-all hover:scale-105 cursor-pointer z-30"
                       title="Cerrar / Volver a tamaño normal"
+                      aria-label="Cerrar video maximizado"
                     >
-                      <X className="w-5 h-5 text-[#fab511]" />
+                      <X className="w-5 h-5 text-[#fab511]" aria-hidden="true" />
                     </button>
                   )}
 
