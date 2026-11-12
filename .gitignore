@@ -6,5 +6,6 @@ coverage/
 *.log
 *.zip
 web-int/
+despliegue-hosting/
 .env*
 !.env.example

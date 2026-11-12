@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Menu, X, PhoneCall } from "lucide-react";
 
 export default function Header() {
@@ -46,7 +46,7 @@ export default function Header() {
             className="flex items-center cursor-pointer group select-none"
           >
             <img 
-              src="https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/logo01.webp"
+              src="https://transportejuvasa.com.pe/media-juvasa/img/logo01.webp"
               alt="Transporte JUVASA"
               width="168"
               height="48"

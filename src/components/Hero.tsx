@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+﻿import React, { useState, useEffect, useRef } from "react";
 import { Clock, ShieldCheck, UserCheck, Headphones, Play, PhoneCall, User, Phone, Users, Calendar, ChevronDown, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function Hero() {
@@ -27,22 +27,22 @@ export default function Hero() {
   // Carrusel de imágenes de la portada
   const heroSlides = [
     {
-      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/x1-p1.1.webp",
+      url: "https://transportejuvasa.com.pe/media-juvasa/img/x1-p1.1.webp",
       alt: "Transporte JUVASA - Portada 1",
       label: "Unidad 1",
     },
     {
-      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/x1-p2.webp",
+      url: "https://transportejuvasa.com.pe/media-juvasa/img/x1-p2.webp",
       alt: "Transporte JUVASA - Portada 2",
       label: "Unidad 2",
     },
     {
-      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/x1-p3.webp",
+      url: "https://transportejuvasa.com.pe/media-juvasa/img/x1-p3.webp",
       alt: "Transporte JUVASA - Portada 3",
       label: "Unidad 3",
     },
     {
-      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/x1-p4.webp",
+      url: "https://transportejuvasa.com.pe/media-juvasa/img/x1-p4.webp",
       alt: "Transporte JUVASA - Portada 4",
       label: "Unidad 4",
     },

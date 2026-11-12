@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, MouseEvent } from "react";
+﻿import { useState, useRef, useEffect, MouseEvent } from "react";
 import { 
   Play, 
   Pause, 
@@ -255,8 +255,8 @@ export default function IntroVideo() {
                   <video
                     ref={videoRef}
                     preload="none"
-                    src="https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/ejem01.mp4"
-                    poster="https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/00-portada.webp"
+                    src="https://transportejuvasa.com.pe/media-juvasa/vid/Juv-Nat.mp4"
+                    poster="https://transportejuvasa.com.pe/media-juvasa/img/00-portada.webp"
                     className="w-full h-full object-cover select-none pointer-events-none"
                     loop
                     playsInline

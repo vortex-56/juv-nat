@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { PhoneCall, Clock, UserCheck, ShieldCheck } from "lucide-react";
 
 export default function FinalCTA() {
@@ -12,19 +12,19 @@ export default function FinalCTA() {
   // Carrusel automático con las mismas imágenes de la portada
   const slides = [
     {
-      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/x1-p1.1.webp",
+      url: "https://transportejuvasa.com.pe/media-juvasa/img/x1-p1.1.webp",
       alt: "Transporte JUVASA - Portada 1",
     },
     {
-      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/x1-p2.webp",
+      url: "https://transportejuvasa.com.pe/media-juvasa/img/x1-p2.webp",
       alt: "Transporte JUVASA - Portada 2",
     },
     {
-      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/x1-p3.webp",
+      url: "https://transportejuvasa.com.pe/media-juvasa/img/x1-p3.webp",
       alt: "Transporte JUVASA - Portada 3",
     },
     {
-      url: "https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/x1-p4.webp",
+      url: "https://transportejuvasa.com.pe/media-juvasa/img/x1-p4.webp",
       alt: "Transporte JUVASA - Portada 4",
     },
   ];

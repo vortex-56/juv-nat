@@ -1,4 +1,4 @@
-import { Phone, Mail, MapPin } from "lucide-react";
+﻿import { Phone, Mail, MapPin } from "lucide-react";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -53,7 +53,7 @@ export default function Footer() {
               className="inline-block cursor-pointer"
             >
               <img 
-                src="https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/logo01.webp"
+                src="https://transportejuvasa.com.pe/media-juvasa/img/logo01.webp"
                 alt="Logo oficial Transporte JUVASA"
                 width="168"
                 height="48"
