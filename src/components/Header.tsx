@@ -50,13 +50,15 @@ export default function Header() {
             <img 
               src="https://raw.githubusercontent.com/vortex-56/juv-nat-2/main/logo01.webp"
               alt="Transporte JUVASA"
+              width="180"
+              height="48"
               className="h-10 sm:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-102"
               referrerPolicy="no-referrer"
             />
           </div>
 
           {/* Menú de navegación */}
-          <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
+          <nav aria-label="Navegación principal" className="hidden lg:flex items-center gap-6 xl:gap-8">
             {menuItems.map((item) => (
               <button
                 key={item.target}
@@ -86,7 +88,8 @@ export default function Header() {
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="p-2 text-white hover:text-[#fab511] focus:outline-none transition-colors"
-              aria-label="Abrir menú"
+              aria-label={isOpen ? "Cerrar menú" : "Abrir menú"}
+              aria-expanded={isOpen}
             >
               {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -95,7 +98,8 @@ export default function Header() {
       </div>
 
       {/* Mobile Drawer */}
-      <div
+      <nav
+        aria-label="Menú móvil"
         className={`lg:hidden absolute top-full left-0 w-full bg-[#6c1323] border-b border-[#fab511]/20 backdrop-blur-xl shadow-2xl transition-all duration-300 transform ${
           isOpen ? "opacity-100 translate-y-0 visible" : "opacity-0 -translate-y-4 invisible"
         }`}
@@ -122,7 +126,7 @@ export default function Header() {
             </a>
           </div>
         </div>
-      </div>
+      </nav>
     </header>
   );
 }

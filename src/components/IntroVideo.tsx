@@ -21,7 +21,21 @@ export default function IntroVideo() {
   const [showControls, setShowControls] = useState(true);
 
   const videoRef = useRef<HTMLVideoElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const hideControlsTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Reiniciar temporizador de ocultamiento de controles cuando está maximizado
+  const resetControlsTimer = () => {
+    setShowControls(true);
+    if (hideControlsTimerRef.current) {
+      clearTimeout(hideControlsTimerRef.current);
+    }
+    if (isPlaying) {
+      hideControlsTimerRef.current = setTimeout(() => {
+        setShowControls(false);
+      }, 3000);
+    }
+  };
 
   // Alternar reproducción / pausa
   const togglePlay = () => {
@@ -41,6 +55,17 @@ export default function IntroVideo() {
     togglePlay();
   };
 
+  // Tocar en el video maximizado: si los controles están ocultos, los muestra; si ya están visibles, pausa o continúa
+  const handleMaximizedVideoClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    if (!showControls) {
+      resetControlsTimer();
+    } else {
+      togglePlay();
+      resetControlsTimer();
+    }
+  };
+
   // Avanzar o retroceder segundos
   const handleSkip = (seconds: number, e?: MouseEvent) => {
     if (e) e.stopPropagation();
@@ -48,6 +73,7 @@ export default function IntroVideo() {
       const targetTime = videoRef.current.currentTime + seconds;
       videoRef.current.currentTime = Math.max(0, Math.min(targetTime, videoRef.current.duration || 0));
       setCurrentTime(videoRef.current.currentTime);
+      if (isMaximized) resetControlsTimer();
     }
   };
 
@@ -55,6 +81,7 @@ export default function IntroVideo() {
   const handleMaximize = (e: MouseEvent) => {
     e.stopPropagation();
     setIsMaximized(true);
+    setShowControls(true);
     if (videoRef.current && videoRef.current.paused) {
       videoRef.current.play().catch(() => {});
       setIsPlaying(true);
@@ -65,6 +92,7 @@ export default function IntroVideo() {
   const handleMinimize = (e?: MouseEvent) => {
     if (e) e.stopPropagation();
     setIsMaximized(false);
+    setShowControls(true);
   };
 
   // Alternar audio
@@ -73,6 +101,7 @@ export default function IntroVideo() {
     if (videoRef.current) {
       videoRef.current.muted = !videoRef.current.muted;
       setIsMuted(videoRef.current.muted);
+      if (isMaximized) resetControlsTimer();
     }
   };
 
@@ -82,6 +111,7 @@ export default function IntroVideo() {
     if (videoRef.current) {
       videoRef.current.currentTime = time;
       setCurrentTime(time);
+      if (isMaximized) resetControlsTimer();
     }
   };
 
@@ -93,6 +123,29 @@ export default function IntroVideo() {
     return `${mins}:${remainingSecs < 10 ? "0" : ""}${remainingSecs}`;
   };
 
+  // Si alguien reprodujo el video y sube o baja de la sección, el video se detiene
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section || typeof IntersectionObserver === "undefined") return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting && !isMaximized) {
+            if (videoRef.current && !videoRef.current.paused) {
+              videoRef.current.pause();
+              setIsPlaying(false);
+            }
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, [isMaximized]);
+
   // Cerrar con Escape y atajos cuando está maximizado
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -102,6 +155,7 @@ export default function IntroVideo() {
       } else if (e.key === " ") {
         e.preventDefault();
         togglePlay();
+        resetControlsTimer();
       } else if (e.key === "ArrowLeft") {
         e.preventDefault();
         handleSkip(-5);
@@ -115,19 +169,32 @@ export default function IntroVideo() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isMaximized, isPlaying]);
 
-  // Manejar visibilidad de controles en maximizado
-  const handleMouseMoveMaximized = () => {
-    setShowControls(true);
-    if (hideControlsTimerRef.current) clearTimeout(hideControlsTimerRef.current);
-    if (isPlaying) {
-      hideControlsTimerRef.current = setTimeout(() => {
-        setShowControls(false);
-      }, 3500);
+  // Manejar timer de inactividad de controles al maximizar o reproducir
+  useEffect(() => {
+    if (!isMaximized) {
+      setShowControls(true);
+      if (hideControlsTimerRef.current) clearTimeout(hideControlsTimerRef.current);
+      return;
     }
-  };
+
+    if (isPlaying) {
+      resetControlsTimer();
+    } else {
+      setShowControls(true);
+      if (hideControlsTimerRef.current) clearTimeout(hideControlsTimerRef.current);
+    }
+
+    return () => {
+      if (hideControlsTimerRef.current) clearTimeout(hideControlsTimerRef.current);
+    };
+  }, [isPlaying, isMaximized]);
 
   return (
-    <section id="video" className="py-8 sm:py-10 bg-[#6c1323] text-white border-b border-[#fab511]/20 scroll-mt-10">
+    <section
+      id="video"
+      ref={sectionRef}
+      className="py-8 sm:py-10 bg-[#6c1323] text-white border-b border-[#fab511]/20 scroll-mt-10"
+    >
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-12">
@@ -181,8 +248,9 @@ export default function IntroVideo() {
                     ? "fixed inset-0 z-[9999] bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-3 sm:p-6 select-none"
                     : "relative w-full h-full aspect-square rounded-2xl bg-black border-4 border-white/20 overflow-hidden shadow-2xl group cursor-pointer"
                 }
-                onMouseMove={isMaximized ? handleMouseMoveMaximized : undefined}
-                onClick={isMaximized ? handleVideoClick : undefined}
+                onMouseMove={isMaximized ? resetControlsTimer : undefined}
+                onPointerDown={isMaximized ? resetControlsTimer : undefined}
+                onTouchStart={isMaximized ? resetControlsTimer : undefined}
               >
                 
                 {/* Cuadro del video estrictamente 1:1 (cuadrado) en su tamaño máximo disponible */}
@@ -192,7 +260,7 @@ export default function IntroVideo() {
                       ? "relative w-[min(88vw,88vh)] h-[min(88vw,88vh)] max-w-[700px] max-h-[700px] aspect-square bg-black rounded-2xl overflow-hidden shadow-2xl border-2 border-white/25 flex items-center justify-center"
                       : "w-full h-full relative"
                   }
-                  onClick={!isMaximized ? handleVideoClick : undefined}
+                  onClick={isMaximized ? handleMaximizedVideoClick : handleVideoClick}
                 >
                   <video
                     ref={videoRef}
@@ -201,6 +269,7 @@ export default function IntroVideo() {
                     className="w-full h-full object-cover select-none pointer-events-none"
                     loop
                     playsInline
+                    preload="none"
                     muted={isMuted}
                     onTimeUpdate={() => {
                       if (videoRef.current) setCurrentTime(videoRef.current.currentTime);
@@ -241,13 +310,6 @@ export default function IntroVideo() {
                     >
                       <Maximize className="w-4 h-4 sm:w-5 sm:h-5 text-[#fab511]" />
                     </button>
-                  )}
-
-                  {/* Modo normal: Etiqueta inferior */}
-                  {!isMaximized && (
-                    <div className="absolute bottom-3 left-3 bg-black/75 backdrop-blur-md border border-white/10 px-3.5 py-1.5 rounded-xl text-xs text-white font-sans font-semibold pointer-events-none">
-                      Transporte JUVASA · Flota & Servicios
-                    </div>
                   )}
 
                   {/* Modo Maximizado: Barra de controles flotante sobre el video */}
@@ -309,6 +371,7 @@ export default function IntroVideo() {
                             onClick={(e) => {
                               e.stopPropagation();
                               togglePlay();
+                              resetControlsTimer();
                             }}
                             className="w-12 h-12 rounded-full bg-[#fab511] hover:bg-[#e0a20e] text-[#6c1323] flex items-center justify-center shadow-lg transition-all active:scale-90 cursor-pointer"
                             title={isPlaying ? "Detener video" : "Continuar video"}
@@ -352,8 +415,11 @@ export default function IntroVideo() {
                     <button
                       type="button"
                       onClick={handleMinimize}
-                      className="absolute top-3 right-3 bg-black/70 hover:bg-black text-white p-2 sm:p-2.5 rounded-xl border border-white/20 shadow-xl transition-all hover:scale-105 cursor-pointer z-30"
+                      className={`absolute top-3 right-3 bg-black/70 hover:bg-black text-white p-2 sm:p-2.5 rounded-xl border border-white/20 shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer z-30 ${
+                        showControls ? "opacity-100" : "opacity-0 pointer-events-none"
+                      }`}
                       title="Cerrar / Volver a tamaño normal"
+                      aria-label="Cerrar video"
                     >
                       <X className="w-5 h-5 text-[#fab511]" />
                     </button>

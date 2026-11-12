@@ -139,6 +139,8 @@ export default function Services() {
           <img
             src={service.imageUrl}
             alt={service.title}
+            width="600"
+            height="338"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             loading="lazy"
             referrerPolicy="no-referrer"
@@ -158,7 +160,7 @@ export default function Services() {
               <h3 className="font-display text-base sm:text-lg font-black text-gray-900 group-hover:text-[#8b1528] transition-colors leading-tight mb-2">
                 {service.title}
               </h3>
-              <p className="text-xs sm:text-sm text-gray-600 font-sans leading-relaxed">
+              <p className="text-xs sm:text-sm text-gray-700 font-sans leading-relaxed">
                 {service.description}
               </p>
             </div>

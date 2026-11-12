@@ -97,6 +97,8 @@ export default function Fleet() {
             alt={vehicle.name}
             referrerPolicy="no-referrer"
             loading="lazy"
+            width="400"
+            height="250"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
         </div>
@@ -108,12 +110,12 @@ export default function Fleet() {
             <h3 className="font-display text-lg sm:text-xl font-black text-[#6c1323] tracking-wide uppercase">
               {vehicle.name}
             </h3>
-            {/* Capacidad: Más gruesa y transparente para diferenciarse de los textos de descripción */}
-            <div className="text-xs sm:text-sm font-extrabold text-black/60 tracking-normal">
+            {/* Capacidad: Más gruesa con alto contraste para legibilidad perfecta */}
+            <div className="text-xs sm:text-sm font-extrabold text-gray-700 tracking-normal">
               Capacidad: {vehicle.capacity}
             </div>
-            {/* Descripción en peso normal y color gris suave */}
-            <p className="text-xs sm:text-sm text-gray-600 font-sans font-medium leading-relaxed pt-1">
+            {/* Descripción en peso normal y color gris con contraste adecuado */}
+            <p className="text-xs sm:text-sm text-gray-700 font-sans font-medium leading-relaxed pt-1">
               {vehicle.description}
             </p>
           </div>

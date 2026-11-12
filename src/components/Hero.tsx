@@ -215,6 +215,10 @@ export default function Hero() {
               src={slide.url}
               alt={slide.alt}
               className="w-full h-full object-cover object-[center_30%]"
+              fetchPriority={idx === 0 ? "high" : "low"}
+              loading={idx === 0 ? "eager" : "lazy"}
+              width="1920"
+              height="1080"
             />
           </div>
         ))}
@@ -295,11 +299,12 @@ export default function Hero() {
               <form onSubmit={handleFormSubmit} className="space-y-2.5 text-left">
                 {/* Nombre completo */}
                 <div>
-                  <label className="text-[10px] font-black text-gray-700 uppercase tracking-wider block mb-0.5">
+                  <label htmlFor="hero-fullName" className="text-[10px] font-black text-gray-700 uppercase tracking-wider block mb-0.5">
                     Nombre completo *
                   </label>
                   <div className="relative">
                     <input
+                      id="hero-fullName"
                       type="text"
                       name="fullName"
                       required
@@ -314,7 +319,7 @@ export default function Hero() {
 
                 {/* Teléfono o WhatsApp con selector de prefijo internacional */}
                 <div>
-                  <label className="text-[10px] font-black text-gray-700 uppercase tracking-wider block mb-0.5">
+                  <label htmlFor="hero-contact" className="text-[10px] font-black text-gray-700 uppercase tracking-wider block mb-0.5">
                     Teléfono o WhatsApp *
                   </label>
                   <div className="flex gap-1.5 font-sans">
@@ -322,7 +327,9 @@ export default function Hero() {
                       <div className="flex items-center gap-1 w-full px-2 py-1.5 text-xs text-gray-950 border border-gray-200 rounded-lg bg-gray-50 focus-within:bg-white focus-within:border-[#6c1323] transition-all">
                         <span className="text-sm">{getCountryEmoji(countryCode)}</span>
                         <input
+                          id="hero-countryCode"
                           type="text"
+                          aria-label="Código de país"
                           value={countryCode}
                           onChange={(e) => {
                             const val = e.target.value;
@@ -366,8 +373,10 @@ export default function Hero() {
 
                     <div className="relative flex-1">
                       <input
+                        id="hero-contact"
                         type="tel"
                         name="contact"
+                        aria-label="Número de teléfono o WhatsApp"
                         required
                         placeholder="Ej. 981 370 909"
                         value={formData.contact}
@@ -381,7 +390,7 @@ export default function Hero() {
 
                 {/* Tipo de servicio (opcional) */}
                 <div>
-                  <label className="text-[10px] font-black text-gray-700 uppercase tracking-wider block mb-0.5">
+                  <label htmlFor="tipo-servicio" className="text-[10px] font-black text-gray-700 uppercase tracking-wider block mb-0.5">
                     Tipo de servicio (Opcional)
                   </label>
                   <div className="relative">
@@ -407,11 +416,12 @@ export default function Hero() {
 
                 {/* Fecha del servicio (opcional) */}
                 <div>
-                  <label className="text-[10px] font-black text-gray-700 uppercase tracking-wider block mb-0.5">
+                  <label htmlFor="hero-serviceDate" className="text-[10px] font-black text-gray-700 uppercase tracking-wider block mb-0.5">
                     Fecha del servicio (Opcional)
                   </label>
                   <div className="relative">
                     <input
+                      id="hero-serviceDate"
                       type="date"
                       name="serviceDate"
                       value={formData.serviceDate}
@@ -424,7 +434,7 @@ export default function Hero() {
 
                 {/* Número de pasajeros */}
                 <div>
-                  <label className="text-[10px] font-black text-gray-700 uppercase tracking-wider block mb-0.5">
+                  <label htmlFor="num-pasajeros" className="text-[10px] font-black text-gray-700 uppercase tracking-wider block mb-0.5">
                     Número de pasajeros *
                   </label>
                   <div className="relative">
@@ -451,8 +461,9 @@ export default function Hero() {
                   >
                     ENVIAR CONSULTA
                   </button>
-                  <p className="text-[10px] text-gray-500 font-sans text-center mt-1.5">
-                    Te contactaremos directamente por WhatsApp · Reservas Lun–Sáb 8:00–18:00
+                  <p className="text-[10px] text-gray-700 font-sans text-center mt-1.5 leading-snug">
+                    <span className="block">Te contactaremos directamente por WhatsApp</span>
+                    <span className="block font-medium text-gray-600">Reservas Lun–Sáb 8:00–18:00</span>
                   </p>
                 </div>
               </form>
